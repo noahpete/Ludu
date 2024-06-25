@@ -3,3 +3,12 @@
 	url = https://github.com/glfw/glfw.git
 [submodule "Ludu/external/glm"]
 	path = Ludu/external/glm
+[submodule "Ludu/external/spdlog"]
+	path = Ludu/external/spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "Ludu/external/entt"]
+	path = Ludu/external/entt
+	url = https://github.com/skypjack/entt.git
+[submodule "Ludu/external/yaml-cpp"]
+	path = Ludu/external/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git

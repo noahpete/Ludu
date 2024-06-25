@@ -11,11 +11,19 @@ find_package(Vulkan REQUIRED)
 
 include_directories(${Vulkan_INCLUDE_DIRS})
 
+add_subdirectory("Ludu/external/spdlog")
+add_subdirectory("Ludu/external/yaml-cpp")
 add_subdirectory("Ludu/external/glfw")
 add_subdirectory("Ludu/external/glm")
+add_subdirectory("Ludu/external/imgui")
+add_subdirectory("Ludu/external/entt")
 
 target_link_libraries("${PROJECT_NAME}"
+    spdlog
+    yaml-cpp::yaml-cpp
     glfw
     glm
     ${Vulkan_LIBRARIES}
+    imgui
+    EnTT
 )
