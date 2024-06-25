@@ -1,0 +1,5 @@
+[submodule "Ludu/external/glfw"]
+	path = Ludu/external/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "Ludu/external/glm"]
+	path = Ludu/external/glm
