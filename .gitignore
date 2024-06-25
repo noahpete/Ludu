@@ -1,1 +1,11 @@
+# CMake stuff
 build
+CMakeCache.txt
+CMakeFiles
+*.cmake
+
+# Visual Studio stuff
+.vs
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
