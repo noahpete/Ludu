@@ -3,6 +3,9 @@ build
 CMakeCache.txt
 CMakeFiles
 *.cmake
+*.dir
+x64
+Debug
 
 # Visual Studio stuff
 .vs
