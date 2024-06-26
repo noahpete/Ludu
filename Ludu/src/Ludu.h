@@ -1,3 +1,4 @@
 #pragma once
 
-#include "Core/Test.h"
+#include "Core/Application.h"
+#include "Core/EntryPoint.h"

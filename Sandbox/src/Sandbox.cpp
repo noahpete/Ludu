@@ -1,6 +1,22 @@
 #include <Ludu.h>
 
-int main(int argc, char* argv[]) {
-    Ludu::TestClass::Print();
-    return 0;
+#include <iostream>
+
+class Sandbox : public Ludu::Application
+{
+public:
+	Sandbox()
+	{
+	}
+
+	~Sandbox()
+	{
+
+	}
+
+};
+
+Ludu::Application* Ludu::CreateApplication()
+{
+	return new Sandbox();
 }

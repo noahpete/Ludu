@@ -1,8 +1,13 @@
 #include "Application.h"
 #include "Application.h"
 #include "Application.h"
+#include "Application.h"
+#include "Application.h"
+#include "Application.h"
+#include "Application.h"
 
-#include "Platform/GeneralWindow.h"
+#include "Platform/Vulkan/VulkanWindow.h"
+
 
 namespace Ludu {
 
@@ -14,7 +19,7 @@ namespace Ludu {
 		m_Window = std::unique_ptr<Window>(Window::Create());
 
 		// Set callback(s)
-		EventManager::Subscribe<Application, QuitEvent>(this, &Application::OnQuitEvent);
+		EventManager::Subscribe<Application, QuitEvent>(this, &Application::OnWindowQuitEvent);
 		EventManager::Subscribe<Application, WindowResizeEvent>(this, &Application::OnWindowResizeEvent);
 	}
 
@@ -30,7 +35,7 @@ namespace Ludu {
 		}
 	}
 
-	void Application::OnQuitEvent(QuitEvent& event)
+	void Application::OnWindowQuitEvent(QuitEvent& event)
 	{
 
 	}

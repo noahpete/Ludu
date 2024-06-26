@@ -12,3 +12,6 @@
 [submodule "Ludu/external/yaml-cpp"]
 	path = Ludu/external/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "Ludu/external/vk-bootstrap"]
+	path = Ludu/external/vk-bootstrap
+	url = https://github.com/charles-lunarg/vk-bootstrap.git

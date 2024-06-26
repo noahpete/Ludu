@@ -5,8 +5,13 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Collect source files for Ludu library (excluding headers)
-file(GLOB LUDU_SOURCE "Ludu/src/*.cpp" "Ludu/src/**/*.cpp")
+file(GLOB_RECURSE LUDU_SOURCE "Ludu/src/*.cpp")
+
 add_library("${PROJECT_NAME}_lib" ${LUDU_SOURCE})
+
+target_precompile_headers("${PROJECT_NAME}_lib"
+    PUBLIC "Ludu/src/ldpch.h"
+)
 
 # Include directory for Ludu library (for Ludu.h)
 target_include_directories("${PROJECT_NAME}_lib"
@@ -29,9 +34,19 @@ include_directories(${Vulkan_INCLUDE_DIRS})
 add_subdirectory("Ludu/external/spdlog")
 add_subdirectory("Ludu/external/yaml-cpp")
 add_subdirectory("Ludu/external/glfw")
+add_subdirectory("Ludu/external/vk-bootstrap")
 add_subdirectory("Ludu/external/glm")
 add_subdirectory("Ludu/external/imgui")
 add_subdirectory("Ludu/external/entt")
+
+# Include directories for external libraries (spdlog, etc.)
+target_include_directories("${PROJECT_NAME}_lib"
+    PUBLIC
+    "Ludu/external/"
+    "Ludu/external/vk-bootstrap/src"
+    "Ludu/external/spdlog/include"
+    "Ludu/external/glfw/include"
+)
 
 # Link libraries to the Sandbox executable
 target_link_libraries("${PROJECT_NAME}"
@@ -41,6 +56,7 @@ target_link_libraries("${PROJECT_NAME}"
     glfw
     glm
     ${Vulkan_LIBRARIES}
+    vk-bootstrap
     imgui
     EnTT
 )

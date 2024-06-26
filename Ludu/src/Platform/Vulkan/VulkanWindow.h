@@ -2,20 +2,24 @@
 
 #include "Core/Window.h"
 
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 namespace Ludu {
 
-	class GeneralWindow : public Window
+	class VulkanWindow : public Window
 	{
 	public:
-		GeneralWindow(const std::string& title, uint32_t width, uint32_t height);
-		virtual ~GeneralWindow();
+		VulkanWindow(const std::string& title, uint32_t width, uint32_t height);
+		virtual ~VulkanWindow();
 
 		void OnUpdate() override;
 
 		inline uint32_t GetWidth() const override { return m_Width; }
 		inline uint32_t GetHeight() const override { return m_Height; }
+		inline VkExtent2D GetExtent() const { return { m_Width, m_Height }; }
+
+		void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
 	private:
 		GLFWwindow* m_Window;

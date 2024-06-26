@@ -3,6 +3,12 @@
 #include "Core/Window.h"
 #include "Events/EventManager.h"
 
+// Temporary
+#include "Platform/Vulkan/VulkanDevice.h"
+#include "Platform/Vulkan/VulkanPipeline.h"
+#include "Platform/Vulkan/VulkanSwapChain.h"
+#include "Platform/Vulkan/VulkanWindow.h"
+
 int main(int argc, char* argv[]);
 
 namespace Ludu {
@@ -15,7 +21,7 @@ namespace Ludu {
 
 		void Run();
 
-		void OnQuitEvent(QuitEvent& event);
+		void OnWindowQuitEvent(QuitEvent& event);
 		void OnWindowResizeEvent(WindowResizeEvent& event);
 
 		static Application& Get() { return *s_Instance; }
