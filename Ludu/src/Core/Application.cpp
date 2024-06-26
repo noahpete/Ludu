@@ -1,6 +1,6 @@
 #include "Application.h"
 
-#include "Core/Log.h"
+#include "Platform/GeneralWindow.h"
 
 namespace Ludu {
 
@@ -8,7 +8,7 @@ namespace Ludu {
 
 	Application::Application()
 	{
-		LD_CORE_TRACE("Ludu::Application ctor!");
+		m_Window = std::unique_ptr<Window>(Window::Create());
 	}
 
 	Application::~Application()
@@ -17,6 +17,10 @@ namespace Ludu {
 
 	void Application::Run()
 	{
+		while (m_Running)
+		{
+			m_Window->OnUpdate();
+		}
 	}
 
 }

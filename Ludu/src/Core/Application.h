@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Window.h"
+
 int main(int argc, char* argv[]);
 
 namespace Ludu {
@@ -16,6 +18,8 @@ namespace Ludu {
 
 	private:
 		static Application* s_Instance;
+		Scope<Window> m_Window;
+		bool m_Running;
 
 	};
 
