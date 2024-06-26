@@ -75,7 +75,7 @@ namespace Ludu
 
             if (event.GetEventType() == EventType::MouseMove) return;
 
-            LD_CORE_INFO("Published event " + event.ToString());
+            //LD_CORE_INFO("Published event " + event.ToString());
         }
 
         template <typename Receiver, typename T>

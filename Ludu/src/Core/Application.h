@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Window.h"
+#include "Events/EventManager.h"
 
 int main(int argc, char* argv[]);
 
@@ -13,6 +14,9 @@ namespace Ludu {
 		virtual ~Application();
 
 		void Run();
+
+		void OnQuitEvent(QuitEvent& event);
+		void OnWindowResizeEvent(WindowResizeEvent& event);
 
 		static Application& Get() { return *s_Instance; }
 
