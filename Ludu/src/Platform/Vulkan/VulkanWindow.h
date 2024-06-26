@@ -1,33 +1,33 @@
 #pragma once
 
-#include "Core/Window.h"
-
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-namespace Ludu {
+#include <string>
 
-	class VulkanWindow : public Window
-	{
-	public:
-		VulkanWindow(const std::string& title, uint32_t width, uint32_t height);
-		virtual ~VulkanWindow();
+namespace Ludu
+{
 
-		void OnUpdate() override;
+    class VulkanWindow
+    {
+    public:
+        VulkanWindow(uint32_t width, uint32_t height, const std::string& title);
+        ~VulkanWindow();
 
-		inline uint32_t GetWidth() const override { return m_Width; }
-		inline uint32_t GetHeight() const override { return m_Height; }
-		inline VkExtent2D GetExtent() const { return { m_Width, m_Height }; }
+        VulkanWindow(const VulkanWindow&) = delete;
+        VulkanWindow &operator=(const VulkanWindow&) = delete;
 
-		void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+        VkExtent2D GetExtent() { return { width, height }; }
 
-	private:
-		GLFWwindow* m_Window;
-		std::string m_Title;
-		uint32_t m_Width, m_Height;
+        bool shouldClose() { return glfwWindowShouldClose(window); }
 
-		void Init(const std::string& title, uint32_t width, uint32_t height);
-		void Shutdown();
+        void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 
-	};
+    private:
+        const uint32_t width, height;
+        std::string title;
+        GLFWwindow *window;
+
+        void initWindow();
+    };
 }

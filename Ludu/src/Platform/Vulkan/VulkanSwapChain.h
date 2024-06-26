@@ -2,23 +2,24 @@
 
 #include "Platform/Vulkan/VulkanDevice.h"
 
-// vulkan headers
 #include <vulkan/vulkan.h>
 
 #include <string>
 #include <vector>
 
-namespace Ludu {
+namespace Ludu
+{
 
-    class VulkanSwapChain {
+    class VulkanSwapChain
+    {
     public:
         static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-        VulkanSwapChain(VulkanDevice& deviceRef, VkExtent2D windowExtent);
+        VulkanSwapChain(VulkanDevice &deviceRef, VkExtent2D windowExtent);
         ~VulkanSwapChain();
 
-        VulkanSwapChain(const VulkanSwapChain&) = delete;
-        void operator=(const VulkanSwapChain&) = delete;
+        VulkanSwapChain(const VulkanSwapChain &) = delete;
+        void operator=(const VulkanSwapChain &) = delete;
 
         VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
         VkRenderPass getRenderPass() { return renderPass; }
@@ -29,13 +30,14 @@ namespace Ludu {
         uint32_t width() { return swapChainExtent.width; }
         uint32_t height() { return swapChainExtent.height; }
 
-        float extentAspectRatio() {
+        float extentAspectRatio()
+        {
             return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
         }
         VkFormat findDepthFormat();
 
-        VkResult acquireNextImage(uint32_t* imageIndex);
-        VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
+        VkResult acquireNextImage(uint32_t *imageIndex);
+        VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
 
     private:
         void createSwapChain();
@@ -47,10 +49,10 @@ namespace Ludu {
 
         // Helper functions
         VkSurfaceFormatKHR chooseSwapSurfaceFormat(
-            const std::vector<VkSurfaceFormatKHR>& availableFormats);
+            const std::vector<VkSurfaceFormatKHR> &availableFormats);
         VkPresentModeKHR chooseSwapPresentMode(
-            const std::vector<VkPresentModeKHR>& availablePresentModes);
-        VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+            const std::vector<VkPresentModeKHR> &availablePresentModes);
+        VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
 
         VkFormat swapChainImageFormat;
         VkExtent2D swapChainExtent;
@@ -64,7 +66,7 @@ namespace Ludu {
         std::vector<VkImage> swapChainImages;
         std::vector<VkImageView> swapChainImageViews;
 
-        VulkanDevice& device;
+        VulkanDevice &device;
         VkExtent2D windowExtent;
 
         VkSwapchainKHR swapChain;
@@ -76,4 +78,4 @@ namespace Ludu {
         size_t currentFrame = 0;
     };
 
-}  // namespace lve
+}
