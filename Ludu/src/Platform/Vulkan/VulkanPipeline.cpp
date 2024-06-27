@@ -1,5 +1,7 @@
 #include "VulkanPipeline.h"
 
+#include "Platform/Vulkan/VulkanModel.h"
+
 #include "Core/Core.h"
 
 #include <fstream>
@@ -118,8 +120,6 @@ namespace Ludu
 
     void VulkanPipeline::createGraphicsPipeline(const std::string &vertFilepath, const std::string &fragFilepath, const PipelineConfigInfo &configInfo)
     {
-        LD_CORE_TRACE("createGraphicsPipeline start");
-
         LD_CORE_ASSERT(configInfo.PipelineLayout != VK_NULL_HANDLE, "Cannot create graphics pipeline: no pipeline layout provided in configInfo");
 
         auto vertCode = readFile(vertFilepath);
@@ -137,8 +137,6 @@ namespace Ludu
         shaderStages[0].pNext = nullptr;
         shaderStages[0].pSpecializationInfo = nullptr;
 
-        LD_CORE_INFO("createGraphicsPipeline 1");
-
         shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
         shaderStages[1].module = fragShaderModule;
@@ -147,15 +145,15 @@ namespace Ludu
         shaderStages[1].pNext = nullptr;
         shaderStages[1].pSpecializationInfo = nullptr;
 
-        LD_CORE_INFO("createGraphicsPipeline 2");
-
+        auto bindingDescriptions = VulkanModel::Vertex::GetBindingDescriptions();
+        auto attributeDescriptions = VulkanModel::Vertex::GetAttributeDescriptions();
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexAttributeDescriptionCount = 0;
-        vertexInputInfo.vertexBindingDescriptionCount = 0;
-        vertexInputInfo.pVertexAttributeDescriptions = nullptr;
-        vertexInputInfo.pVertexBindingDescriptions = nullptr;
+        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+        vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+        vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+        vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 
         VkPipelineViewportStateCreateInfo viewportInfo{};
         viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -163,8 +161,6 @@ namespace Ludu
         viewportInfo.pViewports = &configInfo.Viewport;
         viewportInfo.scissorCount = 1;
         viewportInfo.pScissors = &configInfo.Scissor;
-
-        LD_CORE_INFO("createGraphicsPipeline 3");
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -179,20 +175,15 @@ namespace Ludu
         pipelineInfo.pDepthStencilState = &configInfo.DepthStencilInfo;
         pipelineInfo.pDynamicState = nullptr;
 
-
         pipelineInfo.layout = configInfo.PipelineLayout;
         pipelineInfo.renderPass = configInfo.RenderPass;
         pipelineInfo.subpass = configInfo.Subpass;
 
         pipelineInfo.basePipelineIndex = -1;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
-        LD_CORE_INFO("createGraphicsPipeline 4");
 
         if (vkCreateGraphicsPipelines(m_Device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
             LD_CORE_ERROR("Failed to create graphics pipeline!");
-
-        LD_CORE_TRACE("createGraphicsPipeline stop");
-
     }
 
     void VulkanPipeline::createShaderModule(const std::vector<char> &code, VkShaderModule *shaderModule)
