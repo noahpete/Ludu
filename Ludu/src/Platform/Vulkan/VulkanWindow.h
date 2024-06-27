@@ -20,14 +20,18 @@ namespace Ludu
         VkExtent2D GetExtent() { return { width, height }; }
 
         bool shouldClose() { return glfwWindowShouldClose(window); }
+        bool wasWindowResized() { return frameBufferResized; }
+        void resetWindowResizedFlag() { frameBufferResized = false; }
 
         void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 
     private:
-        const uint32_t width, height;
+        uint32_t width, height;
         std::string title;
         GLFWwindow *window;
+        bool frameBufferResized = false;
 
         void initWindow();
+        static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
     };
 }

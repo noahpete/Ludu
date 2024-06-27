@@ -42,7 +42,8 @@ add_subdirectory("Ludu/external/entt")
 # Include directories for external libraries (spdlog, etc.)
 target_include_directories("${PROJECT_NAME}_lib"
     PUBLIC
-    "Ludu/external/"
+    "Ludu/external"
+    "Ludu/external/glm"
     "Ludu/external/vk-bootstrap/src"
     "Ludu/external/spdlog/include"
     "Ludu/external/glfw/include"

@@ -4,6 +4,7 @@
 
 #include <vulkan/vulkan.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,8 @@ namespace Ludu
     public:
         static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-        VulkanSwapChain(VulkanDevice &deviceRef, VkExtent2D windowExtent);
+        VulkanSwapChain(VulkanDevice& deviceRef, VkExtent2D extent);
+        VulkanSwapChain(VulkanDevice &deviceRef, VkExtent2D extent, std::shared_ptr<VulkanSwapChain> previous);
         ~VulkanSwapChain();
 
         VulkanSwapChain(const VulkanSwapChain &) = delete;
@@ -40,6 +42,7 @@ namespace Ludu
         VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
 
     private:
+        void Init();
         void createSwapChain();
         void createImageViews();
         void createDepthResources();
@@ -70,6 +73,7 @@ namespace Ludu
         VkExtent2D windowExtent;
 
         VkSwapchainKHR swapChain;
+        std::shared_ptr<VulkanSwapChain> oldSwapChain;
 
         std::vector<VkSemaphore> imageAvailableSemaphores;
         std::vector<VkSemaphore> renderFinishedSemaphores;

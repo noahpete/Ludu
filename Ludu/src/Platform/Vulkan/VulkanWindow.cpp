@@ -1,4 +1,5 @@
 #include "VulkanWindow.h"
+#include "VulkanWindow.h"
 
 #include "Core/Core.h"
 
@@ -26,8 +27,18 @@ namespace Ludu {
     {
         glfwInit();
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+        glfwSetWindowUserPointer(window, this);
+        glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+    }
+
+    void Ludu::VulkanWindow::framebufferResizeCallback(GLFWwindow* window, int width, int height)
+    {
+        auto vulkanWindow = reinterpret_cast<VulkanWindow*>(glfwGetWindowUserPointer(window));
+        vulkanWindow->frameBufferResized = true;
+        vulkanWindow->width = width;
+        vulkanWindow->height = height;
     }
 }

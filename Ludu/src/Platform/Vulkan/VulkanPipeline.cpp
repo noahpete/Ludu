@@ -28,23 +28,17 @@ namespace Ludu
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }
 
-    PipelineConfigInfo VulkanPipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height)
+    void VulkanPipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo)
     {
-        PipelineConfigInfo configInfo{};
-
         configInfo.InputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
         configInfo.InputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         configInfo.InputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
 
-        configInfo.Viewport.x = 0.0f;
-        configInfo.Viewport.y = 0.0f;
-        configInfo.Viewport.width = static_cast<float>(width);
-        configInfo.Viewport.height = static_cast<float>(height);
-        configInfo.Viewport.minDepth = 0.0f;
-        configInfo.Viewport.maxDepth = 1.0f;
-
-        configInfo.Scissor.offset = {0, 0};
-        configInfo.Scissor.extent = {width, height};
+        configInfo.ViewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        configInfo.ViewportInfo.viewportCount = 1;
+        configInfo.ViewportInfo.pViewports = nullptr;
+        configInfo.ViewportInfo.scissorCount = 1;
+        configInfo.ViewportInfo.pScissors = nullptr;
 
         configInfo.RasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         configInfo.RasterizationInfo.depthClampEnable = VK_FALSE;
@@ -98,7 +92,11 @@ namespace Ludu
         configInfo.DepthStencilInfo.front = {}; // Optional
         configInfo.DepthStencilInfo.back = {};  // Optional
 
-        return configInfo;
+        configInfo.DynamicStateEnables = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+        configInfo.DynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        configInfo.DynamicStateInfo.pDynamicStates = configInfo.DynamicStateEnables.data();
+        configInfo.DynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.DynamicStateEnables.size());
+        configInfo.DynamicStateInfo.flags = 0;
     }
 
     std::vector<char> VulkanPipeline::readFile(const std::string &filepath)
@@ -155,12 +153,11 @@ namespace Ludu
         vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
         vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 
-        VkPipelineViewportStateCreateInfo viewportInfo{};
-        viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        /*viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         viewportInfo.viewportCount = 1;
         viewportInfo.pViewports = &configInfo.Viewport;
         viewportInfo.scissorCount = 1;
-        viewportInfo.pScissors = &configInfo.Scissor;
+        viewportInfo.pScissors = &configInfo.Scissor;*/
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -168,12 +165,12 @@ namespace Ludu
         pipelineInfo.pStages = shaderStages;
         pipelineInfo.pVertexInputState = &vertexInputInfo;
         pipelineInfo.pInputAssemblyState = &configInfo.InputAssemblyInfo;
-        pipelineInfo.pViewportState = &viewportInfo;
+        pipelineInfo.pViewportState = &configInfo.ViewportInfo;
         pipelineInfo.pRasterizationState = &configInfo.RasterizationInfo;
         pipelineInfo.pMultisampleState = &configInfo.MultisampleInfo;
         pipelineInfo.pColorBlendState = &configInfo.ColorBlendInfo;
         pipelineInfo.pDepthStencilState = &configInfo.DepthStencilInfo;
-        pipelineInfo.pDynamicState = nullptr;
+        pipelineInfo.pDynamicState = &configInfo.DynamicStateInfo;
 
         pipelineInfo.layout = configInfo.PipelineLayout;
         pipelineInfo.renderPass = configInfo.RenderPass;

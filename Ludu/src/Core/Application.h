@@ -7,6 +7,7 @@
 #include "Platform/Vulkan/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanPipeline.h"
 #include "Platform/Vulkan/VulkanSwapChain.h"
+#include "Platform/Vulkan/VulkanModel.h"
 
 
 int main(int argc, char* argv[]);
@@ -33,15 +34,20 @@ namespace Ludu {
 		// Temporary
 		VulkanWindow m_Window{1280, 720, "Hello Vulkan!"};
 		VulkanDevice m_Device{m_Window};
-		VulkanSwapChain m_SwapChain{m_Device, m_Window.GetExtent()};
+		std::unique_ptr<VulkanSwapChain> m_SwapChain;
 		std::unique_ptr<VulkanPipeline> m_Pipeline;
 		VkPipelineLayout m_PipelineLayout;
 		std::vector<VkCommandBuffer> m_CommandBuffers;
+		std::unique_ptr<VulkanModel> m_Model;
 
 		void CreatePipelineLayout();
 		void CreatePipeline();
 		void CreateCommandBuffers();
+		void FreeCommandBuffers();
 		void DrawFrame();
+		void LoadModels();
+		void RecreateSwapChain();
+		void RecordCommandBuffer(int imageIndex);
 
 	};
 

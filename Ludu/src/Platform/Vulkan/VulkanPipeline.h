@@ -9,14 +9,15 @@ namespace Ludu
 {
     struct PipelineConfigInfo
     {
-        VkViewport Viewport;
-        VkRect2D Scissor;
+        VkPipelineViewportStateCreateInfo ViewportInfo;
         VkPipelineInputAssemblyStateCreateInfo InputAssemblyInfo;
         VkPipelineRasterizationStateCreateInfo RasterizationInfo;
         VkPipelineMultisampleStateCreateInfo MultisampleInfo;
         VkPipelineColorBlendAttachmentState ColorBlendAttachment;
         VkPipelineColorBlendStateCreateInfo ColorBlendInfo;
         VkPipelineDepthStencilStateCreateInfo DepthStencilInfo;
+        std::vector<VkDynamicState> DynamicStateEnables;
+        VkPipelineDynamicStateCreateInfo DynamicStateInfo;
         VkPipelineLayout PipelineLayout = nullptr;
         VkRenderPass RenderPass = nullptr;
         uint32_t Subpass = 0;
@@ -29,11 +30,11 @@ namespace Ludu
         ~VulkanPipeline();
 
         VulkanPipeline(const VulkanPipeline&) = delete;
-        void operator=(const VulkanPipeline&) = delete;
+        VulkanPipeline operator=(const VulkanPipeline&) = delete;
 
         void Bind(VkCommandBuffer commandBuffer);
 
-        static PipelineConfigInfo defaultPipelineConfigInfo(uint32_t width, uint32_t height);
+        static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
 
     private:
         VulkanDevice& m_Device;
