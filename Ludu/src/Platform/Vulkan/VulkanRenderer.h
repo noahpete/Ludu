@@ -25,6 +25,7 @@ namespace Ludu
 		void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);
 
 		VkRenderPass GetSwapChainRenderPass() const { return m_SwapChain->getRenderPass(); }
+		float GetAspectRatio() const { return m_SwapChain->extentAspectRatio(); }
 		bool IsFrameInProgress() const { return m_FrameStarted; }
 		VkCommandBuffer GetCurrentCommandBuffer() const
 		{

@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include "Platform/Vulkan/VulkanSimpleRenderSystem.h"
+#include "Platform/Vulkan/VulkanCamera.h"
 
 namespace Ludu
 {
@@ -20,15 +21,20 @@ namespace Ludu
 	void Application::Run()
 	{
 		VulkanSimpleRenderSystem simpleRenderSystem{m_Device, m_Renderer.GetSwapChainRenderPass()};
+		VulkanCamera camera{};
 
 		while (!m_Window.shouldClose())
 		{
 			glfwPollEvents();
 
+			float aspect = m_Renderer.GetAspectRatio();
+			// camera.SetOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
+			camera.SetPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 10.0f);
+
 			if (auto commandBuffer = m_Renderer.BeginFrame())
 			{
 				m_Renderer.BeginSwapChainRenderPass(commandBuffer);
-				simpleRenderSystem.RenderGameObjects(commandBuffer, m_GameObjects);
+				simpleRenderSystem.RenderGameObjects(commandBuffer, m_GameObjects, camera);
 				m_Renderer.EndSwapChainRenderPass(commandBuffer);
 				m_Renderer.EndFrame();
 			}
@@ -104,7 +110,7 @@ namespace Ludu
 		auto cube = VulkanGameObject::CreateGameObject();
 
 		cube.model = model;
-		cube.transform.Translation = {0.0f, 0.0f, 0.5f};
+		cube.transform.Translation = {0.0f, 0.0f, 2.5f};
 		cube.transform.Scale = {0.5f, 0.5f, 0.5f};
 
 		m_GameObjects.push_back(std::move(cube));

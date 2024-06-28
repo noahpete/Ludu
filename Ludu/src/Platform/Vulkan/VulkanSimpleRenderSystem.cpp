@@ -43,7 +43,7 @@ namespace Ludu {
 		m_Pipeline = std::make_unique<VulkanPipeline>(m_Device, "../simple_shader.vert.spv", "../simple_shader.frag.spv", pipelineConfig);
     }
 
-    void VulkanSimpleRenderSystem::RenderGameObjects(VkCommandBuffer commandBuffer, std::vector<VulkanGameObject> &gameObjects)
+    void VulkanSimpleRenderSystem::RenderGameObjects(VkCommandBuffer commandBuffer, std::vector<VulkanGameObject> &gameObjects, const VulkanCamera &camera)
     {
 		m_Pipeline->Bind(commandBuffer);
 
@@ -55,7 +55,7 @@ namespace Ludu {
 			SimplePushConstantData push{};
 			
 			push.Color = obj.color;
-			push.Transform = obj.transform.mat4();
+			push.Transform = camera.GetProjection() * obj.transform.mat4();
 
 			vkCmdPushConstants(commandBuffer, m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
 

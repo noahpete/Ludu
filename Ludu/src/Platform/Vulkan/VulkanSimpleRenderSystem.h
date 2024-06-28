@@ -5,6 +5,7 @@
 #include "Platform/Vulkan/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanPipeline.h"
 #include "Platform/Vulkan/VulkanGameObject.h"
+#include "Platform/Vulkan/VulkanCamera.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -28,7 +29,7 @@ namespace Ludu {
         VulkanSimpleRenderSystem(const VulkanSimpleRenderSystem &) = delete;
         VulkanSimpleRenderSystem &operator=(const VulkanSimpleRenderSystem &) = delete;
 
-        void RenderGameObjects(VkCommandBuffer commandBuffer, std::vector<VulkanGameObject> &gameObjects);
+        void RenderGameObjects(VkCommandBuffer commandBuffer, std::vector<VulkanGameObject> &gameObjects, const VulkanCamera& camera);
 
     private:
         void CreatePipelineLayout();
