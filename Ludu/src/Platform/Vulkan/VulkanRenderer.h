@@ -8,39 +8,23 @@
 #include "Platform/Vulkan/VulkanPipeline.h"
 #include "Platform/Vulkan/VulkanSwapChain.h"
 #include "Platform/Vulkan/VulkanModel.h"
-#include "Platform/Vulkan/VulkanGameObject.h"
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
-
-int main(int argc, char* argv[]);
 
 namespace Ludu {
 
-	struct SimplePushConstantData
-	{
-		glm::mat2 Transform{1.0f};
-		glm::vec2 Offset;
-		alignas(16) glm::vec3 Color;
-	};
-
-	class Application
+	class VulkanRenderer
 	{
 	public:
-		Application();
-		virtual ~Application();
+		VulkanRenderer();
+		virtual ~VulkanRenderer();
 
 		void Run();
 
 		void OnWindowQuitEvent(QuitEvent& event);
 		void OnWindowResizeEvent(WindowResizeEvent& event);
 
-		static Application& Get() { return *s_Instance; }
-
 	private:
-		static Application* s_Instance;
+		static VulkanRenderer* s_Instance;
 		bool m_Running;
 
 		// Temporary
@@ -50,20 +34,16 @@ namespace Ludu {
 		std::unique_ptr<VulkanPipeline> m_Pipeline;
 		VkPipelineLayout m_PipelineLayout;
 		std::vector<VkCommandBuffer> m_CommandBuffers;
-		std::vector<VulkanGameObject> m_GameObjects;
+		std::unique_ptr<VulkanModel> m_Model;
 
 		void CreatePipelineLayout();
 		void CreatePipeline();
 		void CreateCommandBuffers();
 		void FreeCommandBuffers();
 		void DrawFrame();
-		void LoadGameObjects();
+		void LoadModels();
 		void RecreateSwapChain();
 		void RecordCommandBuffer(int imageIndex);
-		void RenderGameObjects(VkCommandBuffer commandBuffer);
 
 	};
-
-	// To be defined in client
-	Application* CreateApplication();
 }

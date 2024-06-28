@@ -16,12 +16,12 @@ namespace Ludu
     public:
         static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-        VulkanSwapChain(VulkanDevice& deviceRef, VkExtent2D extent);
+        VulkanSwapChain(VulkanDevice &deviceRef, VkExtent2D extent);
         VulkanSwapChain(VulkanDevice &deviceRef, VkExtent2D extent, std::shared_ptr<VulkanSwapChain> previous);
         ~VulkanSwapChain();
 
         VulkanSwapChain(const VulkanSwapChain &) = delete;
-        void operator=(const VulkanSwapChain &) = delete;
+        VulkanSwapChain &operator=(const VulkanSwapChain &) = delete;
 
         VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
         VkRenderPass getRenderPass() { return renderPass; }
