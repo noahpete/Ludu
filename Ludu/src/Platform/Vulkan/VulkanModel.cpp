@@ -60,7 +60,7 @@ namespace Ludu {
 
 		attrDescriptions[0].binding = 0;
 		attrDescriptions[0].location = 0;
-		attrDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+		attrDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
 		attrDescriptions[0].offset = offsetof(Vertex, position);
 
 		attrDescriptions[1].binding = 0;

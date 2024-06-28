@@ -2,24 +2,47 @@
 
 #include "Platform/Vulkan/VulkanModel.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <memory>
 
 namespace Ludu
 {
 
-    struct Transform2DComponent
+    struct TransformComponent
     {
-        glm::vec2 Translation{};
-        glm::vec2 Scale{1.0f};
-        float rotation;
+        glm::vec3 Translation{};
+        glm::vec3 Scale{1.0f};
+        glm::vec3 Rotation{};
 
-        glm::mat2 mat2()
+        glm::mat4 mat4()
         {
-            const float s = glm::sin(rotation);
-            const float c = glm::cos(rotation);
-            glm::mat2 rotationMatrix{{c, s}, {-s, c}};
-            glm::mat2 scaleMatrix{{Scale.x, 0.0f}, {0.0f, Scale.y}};
-            return rotationMatrix * scaleMatrix;
+            const float c3 = glm::cos(Rotation.z);
+            const float s3 = glm::sin(Rotation.z);
+            const float c2 = glm::cos(Rotation.x);
+            const float s2 = glm::sin(Rotation.x);
+            const float c1 = glm::cos(Rotation.y);
+            const float s1 = glm::sin(Rotation.y);
+            return glm::mat4{
+                {
+                    Scale.x * (c1 * c3 + s1 * s2 * s3),
+                    Scale.x * (c2 * s3),
+                    Scale.x * (c1 * s2 * s3 - c3 * s1),
+                    0.0f,
+                },
+                {
+                    Scale.y * (c3 * s1 * s2 - c1 * s3),
+                    Scale.y * (c2 * c3),
+                    Scale.y * (c1 * c3 * s2 + s1 * s3),
+                    0.0f,
+                },
+                {
+                    Scale.z * (c2 * s1),
+                    Scale.z * (-s2),
+                    Scale.z * (c1 * c2),
+                    0.0f,
+                },
+                {Translation.x, Translation.y, Translation.z, 1.0f}};
         }
     };
 
@@ -28,7 +51,7 @@ namespace Ludu
     public:
         std::shared_ptr<VulkanModel> model{};
         glm::vec3 color{};
-        Transform2DComponent transform2D{};
+        TransformComponent transform{};
 
         static VulkanGameObject CreateGameObject()
         {
@@ -47,6 +70,5 @@ namespace Ludu
         uint32_t m_ID;
 
         VulkanGameObject(uint32_t objID) : m_ID(objID) {}
-        
     };
 }

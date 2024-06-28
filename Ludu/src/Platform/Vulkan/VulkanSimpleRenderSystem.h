@@ -15,8 +15,7 @@ namespace Ludu {
 
     struct SimplePushConstantData
 	{
-		glm::mat2 Transform{1.0f};
-		glm::vec2 Offset;
+		glm::mat4 Transform{1.0f};
 		alignas(16) glm::vec3 Color;
 	};
 

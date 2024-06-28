@@ -49,13 +49,13 @@ namespace Ludu {
 
 		for (auto& obj : gameObjects)
 		{
-			obj.transform2D.rotation = glm::mod(obj.transform2D.rotation + 0.01f, glm::two_pi<float>());
+			obj.transform.Rotation.y = glm::mod(obj.transform.Rotation.y + 0.01f, glm::two_pi<float>());
+			obj.transform.Rotation.x = glm::mod(obj.transform.Rotation.x + 0.005f, glm::two_pi<float>());
 
 			SimplePushConstantData push{};
 			
-			push.Offset = obj.transform2D.Translation;
 			push.Color = obj.color;
-			push.Transform = obj.transform2D.mat2();
+			push.Transform = obj.transform.mat4();
 
 			vkCmdPushConstants(commandBuffer, m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
 
