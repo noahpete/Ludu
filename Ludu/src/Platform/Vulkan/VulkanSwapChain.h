@@ -41,6 +41,8 @@ namespace Ludu
         VkResult acquireNextImage(uint32_t *imageIndex);
         VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
 
+        bool CompareSwapFormats(const VulkanSwapChain& swapChain) const { return swapChain.swapChainImageFormat == swapChainImageFormat && swapChain.swapChainDepthFormat == swapChainDepthFormat; }
+
     private:
         void Init();
         void createSwapChain();
@@ -58,6 +60,7 @@ namespace Ludu
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
 
         VkFormat swapChainImageFormat;
+        VkFormat swapChainDepthFormat;
         VkExtent2D swapChainExtent;
 
         std::vector<VkFramebuffer> swapChainFramebuffers;

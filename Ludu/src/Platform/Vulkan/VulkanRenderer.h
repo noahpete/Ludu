@@ -1,49 +1,51 @@
 #pragma once
 
-#include "Core/Window.h"
-#include "Events/EventManager.h"
+#include "Core/Core.h"
 
 #include "Platform/Vulkan/VulkanWindow.h"
 #include "Platform/Vulkan/VulkanDevice.h"
-#include "Platform/Vulkan/VulkanPipeline.h"
 #include "Platform/Vulkan/VulkanSwapChain.h"
 #include "Platform/Vulkan/VulkanModel.h"
 
-
-namespace Ludu {
+namespace Ludu
+{
 
 	class VulkanRenderer
 	{
 	public:
-		VulkanRenderer();
+		VulkanRenderer(VulkanWindow &window, VulkanDevice &device);
 		virtual ~VulkanRenderer();
 
-		void Run();
+		VulkanRenderer(const VulkanRenderer &) = delete;
+		VulkanRenderer &operator=(const VulkanRenderer &) = delete;
 
-		void OnWindowQuitEvent(QuitEvent& event);
-		void OnWindowResizeEvent(WindowResizeEvent& event);
+		VkCommandBuffer BeginFrame();
+		void EndFrame();
+		void BeginSwapChainRenderPass(VkCommandBuffer commandBuffer);
+		void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);
+
+		VkRenderPass GetSwapChainRenderPass() const { return m_SwapChain->getRenderPass(); }
+		bool IsFrameInProgress() const { return m_FrameStarted; }
+		VkCommandBuffer GetCurrentCommandBuffer() const
+		{
+			LD_CORE_ASSERT(m_FrameStarted, "Cannot get command buffer when frame not in progress!");
+			return m_CommandBuffers[m_CurrentFrameIndex];
+		}
+
+		int GetFrameIndex() const { return m_CurrentFrameIndex; }
 
 	private:
-		static VulkanRenderer* s_Instance;
-		bool m_Running;
-
-		// Temporary
-		VulkanWindow m_Window{1280, 720, "Hello Vulkan!"};
-		VulkanDevice m_Device{m_Window};
+		VulkanWindow &m_Window;
+		VulkanDevice &m_Device;
 		std::unique_ptr<VulkanSwapChain> m_SwapChain;
-		std::unique_ptr<VulkanPipeline> m_Pipeline;
-		VkPipelineLayout m_PipelineLayout;
 		std::vector<VkCommandBuffer> m_CommandBuffers;
-		std::unique_ptr<VulkanModel> m_Model;
 
-		void CreatePipelineLayout();
-		void CreatePipeline();
+		uint32_t m_CurrentImageIndex;
+		int m_CurrentFrameIndex;
+		bool m_FrameStarted = false;
+
 		void CreateCommandBuffers();
 		void FreeCommandBuffers();
-		void DrawFrame();
-		void LoadModels();
 		void RecreateSwapChain();
-		void RecordCommandBuffer(int imageIndex);
-
 	};
 }

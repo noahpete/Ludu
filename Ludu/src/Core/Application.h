@@ -5,10 +5,8 @@
 
 #include "Platform/Vulkan/VulkanWindow.h"
 #include "Platform/Vulkan/VulkanDevice.h"
-#include "Platform/Vulkan/VulkanPipeline.h"
-#include "Platform/Vulkan/VulkanSwapChain.h"
-#include "Platform/Vulkan/VulkanModel.h"
 #include "Platform/Vulkan/VulkanGameObject.h"
+#include "Platform/Vulkan/VulkanRenderer.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -18,13 +16,6 @@
 int main(int argc, char* argv[]);
 
 namespace Ludu {
-
-	struct SimplePushConstantData
-	{
-		glm::mat2 Transform{1.0f};
-		glm::vec2 Offset;
-		alignas(16) glm::vec3 Color;
-	};
 
 	class Application
 	{
@@ -46,21 +37,10 @@ namespace Ludu {
 		// Temporary
 		VulkanWindow m_Window{1280, 720, "Hello Vulkan!"};
 		VulkanDevice m_Device{m_Window};
-		std::unique_ptr<VulkanSwapChain> m_SwapChain;
-		std::unique_ptr<VulkanPipeline> m_Pipeline;
-		VkPipelineLayout m_PipelineLayout;
-		std::vector<VkCommandBuffer> m_CommandBuffers;
 		std::vector<VulkanGameObject> m_GameObjects;
+		VulkanRenderer m_Renderer{m_Window, m_Device};
 
-		void CreatePipelineLayout();
-		void CreatePipeline();
-		void CreateCommandBuffers();
-		void FreeCommandBuffers();
-		void DrawFrame();
 		void LoadGameObjects();
-		void RecreateSwapChain();
-		void RecordCommandBuffer(int imageIndex);
-		void RenderGameObjects(VkCommandBuffer commandBuffer);
 
 	};
 
