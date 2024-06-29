@@ -13,6 +13,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
+#include <chrono>
+
 int main(int argc, char* argv[]);
 
 namespace Ludu {

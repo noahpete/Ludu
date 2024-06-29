@@ -2,6 +2,7 @@
 
 #include "Platform/Vulkan/VulkanSimpleRenderSystem.h"
 #include "Platform/Vulkan/VulkanCamera.h"
+#include "Platform/Vulkan/VulkanController.h"
 
 namespace Ludu
 {
@@ -25,9 +26,23 @@ namespace Ludu
 		// camera.SetViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f));
 		// camera.SetViewTarget(glm::vec3(-1.0f, -2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 2.5f));
 
+		auto viewerObject = VulkanGameObject::CreateGameObject();
+		VulkanController cameraController{};
+
+		auto currentTime = std::chrono::high_resolution_clock::now();
+
 		while (!m_Window.shouldClose())
 		{
 			glfwPollEvents();
+
+			auto newTime = std::chrono::high_resolution_clock::now();
+			float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+			currentTime = newTime;
+
+			//frameTime = glm::min(frameTime, MAX_FRAME_TIME);
+
+			cameraController.MoveInPlaneXZ(m_Window.GetGLFWWindow(), frameTime, viewerObject);
+			camera.SetViewXYZ(viewerObject.transform.Translation, viewerObject.transform.Rotation);
 
 			float aspect = m_Renderer.GetAspectRatio();
 			// camera.SetOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);

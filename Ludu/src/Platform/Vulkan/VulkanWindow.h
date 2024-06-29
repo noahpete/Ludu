@@ -25,6 +25,8 @@ namespace Ludu
 
         void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 
+        GLFWwindow* GetGLFWWindow() const { return window; }
+
     private:
         uint32_t width, height;
         std::string title;

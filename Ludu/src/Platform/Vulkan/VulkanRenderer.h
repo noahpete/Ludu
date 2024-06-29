@@ -42,7 +42,7 @@ namespace Ludu
 		std::vector<VkCommandBuffer> m_CommandBuffers;
 
 		uint32_t m_CurrentImageIndex;
-		int m_CurrentFrameIndex;
+		int m_CurrentFrameIndex = 0;
 		bool m_FrameStarted = false;
 
 		void CreateCommandBuffers();

@@ -11,12 +11,18 @@ namespace Ludu {
 	class VulkanModel
 	{
 	public:
-		struct Vertex {
+		struct Vertex
+		{
 			glm::vec3 position;
 			glm::vec3 color;
 
 			static std::vector<VkVertexInputBindingDescription> GetBindingDescriptions();
 			static std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions();
+		};
+
+		struct Builder
+		{
+
 		};
 
 		VulkanModel(VulkanDevice& device, const std::vector<Vertex>& vertices);
