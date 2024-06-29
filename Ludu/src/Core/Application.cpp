@@ -3,9 +3,15 @@
 #include "Platform/Vulkan/VulkanSimpleRenderSystem.h"
 #include "Platform/Vulkan/VulkanCamera.h"
 #include "Platform/Vulkan/VulkanController.h"
+#include "Platform/Vulkan/VulkanBuffer.h"
 
 namespace Ludu
 {
+	struct GlobalUBO
+	{
+		glm::mat4 projectionView{ 1.0f };
+		glm::vec3 lightDirection = glm::normalize(glm::vec3{ 1.0f, -3.0f, -1.0f });
+	};
 
 	Application *Application::s_Instance = nullptr;
 
@@ -21,6 +27,22 @@ namespace Ludu
 
 	void Application::Run()
 	{
+		std::vector<std::unique_ptr<VulkanBuffer>> uboBuffers(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
+
+		for (int i = 0; i < uboBuffers.size(); i++)
+		{
+			uboBuffers[i] = std::make_unique<VulkanBuffer>(
+				m_Device,
+				sizeof(GlobalUBO),
+				1,
+				VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+			);
+			uboBuffers[i]->map();
+		}
+
+		
+
 		VulkanSimpleRenderSystem simpleRenderSystem{m_Device, m_Renderer.GetSwapChainRenderPass()};
 		VulkanCamera camera{};
 		// camera.SetViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f));
@@ -50,8 +72,18 @@ namespace Ludu
 
 			if (auto commandBuffer = m_Renderer.BeginFrame())
 			{
+				int frameIndex = m_Renderer.GetFrameIndex();
+				FrameInfo frameInfo{ frameIndex, frameTime, commandBuffer, camera };
+
+				// Update
+				GlobalUBO ubo{};
+				ubo.projectionView = camera.GetProjection() * camera.GetView();
+				uboBuffers[frameIndex]->writeToBuffer(&ubo);
+				uboBuffers[frameIndex]->flush();
+
+				// Render
 				m_Renderer.BeginSwapChainRenderPass(commandBuffer);
-				simpleRenderSystem.RenderGameObjects(commandBuffer, m_GameObjects, camera);
+				simpleRenderSystem.RenderGameObjects(frameInfo, m_GameObjects);
 				m_Renderer.EndSwapChainRenderPass(commandBuffer);
 				m_Renderer.EndFrame();
 			}
@@ -60,66 +92,16 @@ namespace Ludu
 		vkDeviceWaitIdle(m_Device.device());
 	}
 
-	std::unique_ptr<VulkanModel> CreateCubeModel(VulkanDevice &device, glm::vec3 offset)
-	{
-		VulkanModel::Builder modelBuilder{};
-		modelBuilder.vertices = {
-			// left face (white)
-			{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
-			{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
-			{{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
-			{{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
-
-			// right face (yellow)
-			{{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
-			{{.5f, .5f, .5f}, {.8f, .8f, .1f}},
-			{{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
-			{{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
-
-			// top face (orange, remember y axis points down)
-			{{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-			{{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-			{{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-			{{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-
-			// bottom face (red)
-			{{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-			{{.5f, .5f, .5f}, {.8f, .1f, .1f}},
-			{{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
-			{{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-
-			// nose face (blue)
-			{{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-			{{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-			{{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-			{{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-
-			// tail face (green)
-			{{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-			{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-			{{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-			{{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-		};
-		for (auto& v : modelBuilder.vertices) {
-			v.position += offset;
-		}
-
-		modelBuilder.indices = { 0,  1,  2,  0,  3,  1,  4,  5,  6,  4,  7,  5,  8,  9,  10, 8,  11, 9,
-								12, 13, 14, 12, 15, 13, 16, 17, 18, 16, 19, 17, 20, 21, 22, 20, 23, 21 };
-
-		return std::make_unique<VulkanModel>(device, modelBuilder);
-	}
-
 	void Application::LoadGameObjects()
 	{
-		std::shared_ptr<VulkanModel> model = CreateCubeModel(m_Device, {0.0f, 0.0f, 0.0f});
+		std::shared_ptr<VulkanModel> model = VulkanModel::CreateModelFromFile(m_Device, "flat_vase.obj");
 
-		auto cube = VulkanGameObject::CreateGameObject();
+		auto gameObject = VulkanGameObject::CreateGameObject();
 
-		cube.model = model;
-		cube.transform.Translation = {0.0f, 0.0f, 2.5f};
-		cube.transform.Scale = {0.5f, 0.5f, 0.5f};
+		gameObject.model = model;
+		gameObject.transform.Translation = {0.0f, 0.5f, 2.5f};
+		gameObject.transform.Scale = {1.0f, 1.0f, 1.0f};
 
-		m_GameObjects.push_back(std::move(cube));
+		m_GameObjects.push_back(std::move(gameObject));
 	}
 }

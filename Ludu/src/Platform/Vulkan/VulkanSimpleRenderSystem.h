@@ -6,6 +6,8 @@
 #include "Platform/Vulkan/VulkanPipeline.h"
 #include "Platform/Vulkan/VulkanGameObject.h"
 #include "Platform/Vulkan/VulkanCamera.h"
+#include "Platform/Vulkan/VulkanPipeline.h"
+#include "Platform/Vulkan/VulkanFrameInfo.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -16,8 +18,8 @@ namespace Ludu {
 
     struct SimplePushConstantData
 	{
-		glm::mat4 Transform{1.0f};
-		alignas(16) glm::vec3 Color;
+        glm::mat4 Transform{ 1.0f };
+        glm::mat4 ModelMatrix{1.0f};
 	};
 
 	class VulkanSimpleRenderSystem
@@ -29,7 +31,7 @@ namespace Ludu {
         VulkanSimpleRenderSystem(const VulkanSimpleRenderSystem &) = delete;
         VulkanSimpleRenderSystem &operator=(const VulkanSimpleRenderSystem &) = delete;
 
-        void RenderGameObjects(VkCommandBuffer commandBuffer, std::vector<VulkanGameObject> &gameObjects, const VulkanCamera& camera);
+        void RenderGameObjects(FrameInfo &frameInfo, std::vector<VulkanGameObject> &gameObjects);
 
     private:
         void CreatePipelineLayout();
