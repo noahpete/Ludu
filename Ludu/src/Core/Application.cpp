@@ -4,6 +4,7 @@
 #include "Platform/Vulkan/VulkanCamera.h"
 #include "Platform/Vulkan/VulkanController.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
+#include "Platform/Vulkan/VulkanDescriptors.h"
 
 namespace Ludu
 {
@@ -18,6 +19,7 @@ namespace Ludu
 	Application::Application()
 		: m_Running(true)
 	{
+		m_GlobalPool = VulkanDescriptorPool::Builder(m_Device).setMaxSets(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT).addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VulkanSwapChain::MAX_FRAMES_IN_FLIGHT).build();
 		LoadGameObjects();
 	}
 
@@ -41,12 +43,18 @@ namespace Ludu
 			uboBuffers[i]->map();
 		}
 
-		
+		auto globalSetLayout = VulkanDescriptorSetLayout::Builder(m_Device).addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT).build();
 
-		VulkanSimpleRenderSystem simpleRenderSystem{m_Device, m_Renderer.GetSwapChainRenderPass()};
+		std::vector<VkDescriptorSet> globalDescriptorSets(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
+		for (int i = 0; i < globalDescriptorSets.size(); i++)
+		{
+			auto bufferInfo = uboBuffers[i]->descriptorInfo();
+			VulkanDescriptorWriter(*globalSetLayout, *m_GlobalPool).writeBuffer(0, &bufferInfo).build(globalDescriptorSets[i]);
+		}
+
+		VulkanSimpleRenderSystem simpleRenderSystem{ m_Device, m_Renderer.GetSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout() };
+
 		VulkanCamera camera{};
-		// camera.SetViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f));
-		// camera.SetViewTarget(glm::vec3(-1.0f, -2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 2.5f));
 
 		auto viewerObject = VulkanGameObject::CreateGameObject();
 		VulkanController cameraController{};
@@ -73,14 +81,14 @@ namespace Ludu
 			if (auto commandBuffer = m_Renderer.BeginFrame())
 			{
 				int frameIndex = m_Renderer.GetFrameIndex();
-				FrameInfo frameInfo{ frameIndex, frameTime, commandBuffer, camera };
+				FrameInfo frameInfo{ frameIndex, frameTime, commandBuffer, camera, globalDescriptorSets[frameIndex] };
 
 				// Update
 				GlobalUBO ubo{};
 				ubo.projectionView = camera.GetProjection() * camera.GetView();
 				uboBuffers[frameIndex]->writeToBuffer(&ubo);
 				uboBuffers[frameIndex]->flush();
-
+				 
 				// Render
 				m_Renderer.BeginSwapChainRenderPass(commandBuffer);
 				simpleRenderSystem.RenderGameObjects(frameInfo, m_GameObjects);

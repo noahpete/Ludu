@@ -18,14 +18,14 @@ namespace Ludu {
 
     struct SimplePushConstantData
 	{
-        glm::mat4 Transform{ 1.0f };
         glm::mat4 ModelMatrix{1.0f};
+        glm::mat4 NormalMatrix{ 1.0f };
 	};
 
 	class VulkanSimpleRenderSystem
     {
     public:
-        VulkanSimpleRenderSystem(VulkanDevice &device, VkRenderPass renderPass);
+        VulkanSimpleRenderSystem(VulkanDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
         ~VulkanSimpleRenderSystem();
 
         VulkanSimpleRenderSystem(const VulkanSimpleRenderSystem &) = delete;
@@ -34,7 +34,7 @@ namespace Ludu {
         void RenderGameObjects(FrameInfo &frameInfo, std::vector<VulkanGameObject> &gameObjects);
 
     private:
-        void CreatePipelineLayout();
+        void CreatePipelineLayout(VkDescriptorSetLayout globalSetLayout);
         void CreatePipeline(VkRenderPass renderPass);
 
         VulkanDevice& m_Device;

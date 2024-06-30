@@ -2,10 +2,10 @@
 
 namespace Ludu {
 
-	VulkanSimpleRenderSystem::VulkanSimpleRenderSystem(VulkanDevice& device, VkRenderPass renderPass)
+	VulkanSimpleRenderSystem::VulkanSimpleRenderSystem(VulkanDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
         : m_Device{device}
 	{
-		CreatePipelineLayout();
+		CreatePipelineLayout(globalSetLayout);
 		CreatePipeline(renderPass);
 	}
 
@@ -14,17 +14,19 @@ namespace Ludu {
 		vkDestroyPipelineLayout(m_Device.device(), m_PipelineLayout, nullptr);
 	}
 
-    void VulkanSimpleRenderSystem::CreatePipelineLayout()
+    void VulkanSimpleRenderSystem::CreatePipelineLayout(VkDescriptorSetLayout globalSetLayout)
     {
 		VkPushConstantRange pushConstantRange{};
 		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 		pushConstantRange.offset = 0;
 		pushConstantRange.size = sizeof(SimplePushConstantData);
 
+		std::vector<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
+
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = 0;
-		pipelineLayoutInfo.pSetLayouts = nullptr;
+		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
+		pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
 		pipelineLayoutInfo.pushConstantRangeCount = 1;
 		pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
@@ -47,15 +49,14 @@ namespace Ludu {
     {
 		m_Pipeline->Bind(frameInfo.commandBuffer);
 
-		auto projectionView = frameInfo.camera.GetProjection() * frameInfo.camera.GetView();
+		vkCmdBindDescriptorSets(frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_PipelineLayout, 0, 1, &frameInfo.globalDescriptorSet, 0, nullptr);
 
 		for (auto& obj : gameObjects)
 		{
 			SimplePushConstantData push{};
 			
-			auto modelMatrix = obj.transform.mat4();
-			push.Transform = projectionView * obj.transform.mat4();
-			push.ModelMatrix = modelMatrix;
+			push.ModelMatrix = obj.transform.mat4();
+			push.NormalMatrix = obj.transform.normalMatrix();
 
 			vkCmdPushConstants(frameInfo.commandBuffer, m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
 

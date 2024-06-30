@@ -12,5 +12,6 @@ namespace Ludu {
 		float frameTime;
 		VkCommandBuffer commandBuffer;
 		VulkanCamera& camera;
+		VkDescriptorSet globalDescriptorSet;
 	};
 }

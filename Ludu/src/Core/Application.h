@@ -7,6 +7,7 @@
 #include "Platform/Vulkan/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanGameObject.h"
 #include "Platform/Vulkan/VulkanRenderer.h"
+#include "Platform/Vulkan/VulkanDescriptors.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -39,6 +40,7 @@ namespace Ludu {
 		// Temporary
 		VulkanWindow m_Window{1280, 720, "Hello Vulkan!"};
 		VulkanDevice m_Device{m_Window};
+		std::unique_ptr<VulkanDescriptorPool> m_GlobalPool{};
 		std::vector<VulkanGameObject> m_GameObjects;
 		VulkanRenderer m_Renderer{m_Window, m_Device};
 
