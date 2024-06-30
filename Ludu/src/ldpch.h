@@ -17,6 +17,7 @@
 #include "Core/Core.h"
 #include "Core/Log.h"
 #include "Core/Assert.h"
+#include "Core/Util.h"
 
 #ifdef LD_PLATFORM_WINDOWS
 	#include <Windows.h>
