@@ -1,11 +1,13 @@
 #include "ldpch.h"
 #include "VulkanRenderer.h"
 
-namespace Ludu {
+namespace Ludu
+{
 
     VulkanRenderer::VulkanRenderer(Ref<VulkanWindow> window)
+        : m_Device{*window},
+          m_Pipeline{m_Device, VulkanPipeline::DefaultPipelineConfigInfo(window->GetWidth(), window->GetHeight())}
     {
-        LD_CORE_INFO("VulkanRenderer ctor!");
     }
 
     VulkanRenderer::~VulkanRenderer()
@@ -14,6 +16,5 @@ namespace Ludu {
 
     void VulkanRenderer::OnUpdate()
     {
-        
     }
 }

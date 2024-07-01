@@ -29,4 +29,11 @@ namespace Ludu
     {
         glfwPollEvents();
     }
+
+    void VulkanWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR *surface)
+    {
+        int success = glfwCreateWindowSurface(instance, m_Window, nullptr, surface);
+        if (success != VK_SUCCESS)
+            LD_CORE_ERROR("Failed to create window surface!");
+    }
 }

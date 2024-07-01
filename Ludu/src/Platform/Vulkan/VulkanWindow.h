@@ -21,6 +21,8 @@ namespace Ludu
 
         bool ShouldClose() override { return glfwWindowShouldClose(m_Window); }
 
+        void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+
     private:
         uint32_t m_Width, m_Height;
         std::string m_Title;
