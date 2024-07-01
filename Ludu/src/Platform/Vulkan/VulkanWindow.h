@@ -19,6 +19,11 @@ namespace Ludu
         uint32_t GetWidth() const override { return m_Width; }
         uint32_t GetHeight() const override { return m_Height; }
 
+        VkExtent2D GetExtent() const { return { m_Width, m_Height }; }
+
+        VulkanWindow(const VulkanWindow &) = delete;
+        VulkanWindow &operator=(const VulkanWindow &) = delete;
+
         bool ShouldClose() override { return glfwWindowShouldClose(m_Window); }
 
         void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
