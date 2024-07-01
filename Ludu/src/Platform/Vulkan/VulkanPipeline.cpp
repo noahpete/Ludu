@@ -48,13 +48,20 @@ namespace Ludu {
         vertexInputInfo.pVertexAttributeDescriptions = nullptr;
         vertexInputInfo.pVertexBindingDescriptions = nullptr;
 
+        VkPipelineViewportStateCreateInfo viewportInfo{};
+        viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        viewportInfo.viewportCount = 1;
+        viewportInfo.pViewports = nullptr;
+        viewportInfo.scissorCount = 1;
+        viewportInfo.pScissors = nullptr;
+
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
         pipelineInfo.stageCount = 2;
         pipelineInfo.pStages = shaderStages;
         pipelineInfo.pVertexInputState = &vertexInputInfo;
         pipelineInfo.pInputAssemblyState = &configInfo.InputAssemblyInfo;
-        pipelineInfo.pViewportState = &configInfo.ViewportInfo;
+        pipelineInfo.pViewportState = &viewportInfo;
         pipelineInfo.pRasterizationState = &configInfo.RasterizationInfo;
         pipelineInfo.pMultisampleState = &configInfo.MultisampleInfo;
         pipelineInfo.pColorBlendState = &configInfo.ColorBlendInfo;
@@ -91,12 +98,6 @@ namespace Ludu {
         configInfo.InputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
         configInfo.InputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         configInfo.InputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
-
-        configInfo.ViewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        configInfo.ViewportInfo.viewportCount = 1;
-        configInfo.ViewportInfo.pViewports = nullptr;
-        configInfo.ViewportInfo.scissorCount = 1;
-        configInfo.ViewportInfo.pScissors = nullptr;
 
         configInfo.RasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         configInfo.RasterizationInfo.depthClampEnable = VK_FALSE;
