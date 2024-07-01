@@ -16,7 +16,12 @@ namespace Ludu {
         vkDestroyPipeline(m_Device.device(), m_GraphicsPipeline, nullptr);
     }
 
-    void VulkanPipeline::CreateGraphicsPipeline(const PipelineConfigInfo& configInfo)
+    void VulkanPipeline::Bind(VkCommandBuffer commandBuffer)
+    {
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicsPipeline);
+    }
+
+    void VulkanPipeline::CreateGraphicsPipeline(const PipelineConfigInfo &configInfo)
     {
         auto vertSrc = Util::ReadFile(VERT_FILEPATH);
         auto fragSrc = Util::ReadFile(FRAG_FILEPATH);

@@ -25,7 +25,11 @@ namespace Ludu
 
 			if (m_Window->ShouldClose())
 				m_Running = false;
+
+			m_Renderer->OnUpdate();
 		}
+
+		m_Renderer->Shutdown();
 
 	}
 }

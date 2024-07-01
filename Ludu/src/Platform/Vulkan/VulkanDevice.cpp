@@ -18,9 +18,9 @@ namespace Ludu
         void *pUserData)
     {
         // Ignore VK_KHR_portability_subset extension error
-        if (int(pCallbackData->sType) == 1000128003)
-            return VK_FALSE;
-            
+        // if (int(pCallbackData->sType) == 1000128003)
+        //     return VK_FALSE;
+
         std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
         return VK_FALSE;

@@ -32,6 +32,8 @@ namespace Ludu
         VulkanPipeline(const VulkanPipeline&) = delete;
         VulkanPipeline operator=(const VulkanPipeline&) = delete;
 
+        void Bind(VkCommandBuffer commandBuffer);
+
         void CreateGraphicsPipeline(const PipelineConfigInfo &configInfo);
         void CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
 

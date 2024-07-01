@@ -13,6 +13,8 @@ namespace Ludu {
 
         virtual void OnUpdate() = 0;
 
+        virtual void Shutdown() = 0;
+
         static Scope<Renderer> Create(Ref<Window> window);
 
     };

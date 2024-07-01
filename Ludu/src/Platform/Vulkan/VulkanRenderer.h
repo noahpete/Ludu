@@ -17,6 +17,8 @@ namespace Ludu
 
         void OnUpdate() override;
 
+        void Shutdown() override;
+
         VulkanRenderer(const VulkanRenderer &) = delete;
         VulkanRenderer &operator=(const VulkanRenderer &) = delete;
 
