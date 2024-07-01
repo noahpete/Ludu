@@ -2,6 +2,7 @@
 
 #include "Core/Window.h"
 #include "Events/EventManager.h"
+#include "Renderer/Renderer.h"
 
 int main(int argc, char* argv[]);
 
@@ -23,6 +24,9 @@ namespace Ludu {
 	private:
 		static Application* s_Instance;
 		bool m_Running;
+
+		Ref<Window> m_Window;
+		Ref<Renderer> m_Renderer;
 
 	};
 

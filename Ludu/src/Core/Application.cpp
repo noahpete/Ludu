@@ -9,7 +9,8 @@ namespace Ludu
 	Application::Application()
 		: m_Running(true)
 	{
-
+		m_Window = Window::Create(1280, 720, "Ludu");
+		m_Renderer = Renderer::Create(m_Window);
 	}
 
 	Application::~Application()
@@ -18,9 +19,12 @@ namespace Ludu
 
 	void Application::Run()
 	{
-		while (true)
+		while (m_Running)
 		{
-			
+			m_Window->OnUpdate();
+
+			if (m_Window->ShouldClose())
+				m_Running = false;
 		}
 
 	}
