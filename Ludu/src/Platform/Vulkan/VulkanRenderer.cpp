@@ -157,6 +157,8 @@ namespace Ludu
         uint32_t imageIndex;
         auto result = m_SwapChain->acquireNextImage(&imageIndex);
 
+        LD_CORE_INFO("DrawFrame!");
+
         // Resize window
         if (result == VK_ERROR_OUT_OF_DATE_KHR)
         {

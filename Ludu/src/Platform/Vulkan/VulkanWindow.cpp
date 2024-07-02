@@ -6,6 +6,7 @@ namespace Ludu
     static bool glfwInitialized = false;
 
     VulkanWindow::VulkanWindow(uint32_t width, uint32_t height, const std::string &title)
+        : m_Width(width), m_Height(height), m_Title(title)
     {
         if (!glfwInitialized)
         {
@@ -35,8 +36,8 @@ namespace Ludu
 
     void VulkanWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR *surface)
     {
-        int success = glfwCreateWindowSurface(instance, m_Window, nullptr, surface);
-        if (success != VK_SUCCESS)
+        int result = glfwCreateWindowSurface(instance, m_Window, nullptr, surface);
+        if (result != VK_SUCCESS)
             LD_CORE_ERROR("Failed to create window surface!");
     }
 

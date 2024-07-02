@@ -24,8 +24,8 @@ namespace Ludu
     class VulkanPipeline
     {
     public:
-        const std::string VERT_FILEPATH = "simple_shader.vert.spv";
-        const std::string FRAG_FILEPATH = "simple_shader.frag.spv";
+        const std::string VERT_FILEPATH = "../simple_shader.vert.spv";
+        const std::string FRAG_FILEPATH = "../simple_shader.frag.spv";
 
         VulkanPipeline(VulkanDevice &device, const PipelineConfigInfo &configInfo);
         ~VulkanPipeline();
