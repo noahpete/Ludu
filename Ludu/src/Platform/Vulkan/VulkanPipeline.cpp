@@ -61,9 +61,9 @@ namespace Ludu {
         VkPipelineViewportStateCreateInfo viewportInfo{};
         viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         viewportInfo.viewportCount = 1;
-        viewportInfo.pViewports = nullptr;
+        viewportInfo.pViewports = &configInfo.Viewport;
         viewportInfo.scissorCount = 1;
-        viewportInfo.pScissors = nullptr;
+        viewportInfo.pScissors = &configInfo.Scissor;
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -108,6 +108,16 @@ namespace Ludu {
         configInfo.InputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
         configInfo.InputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         configInfo.InputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
+
+        configInfo.Viewport.x = 0.0f;
+        configInfo.Viewport.y = 0.0f;
+        configInfo.Viewport.width = static_cast<uint32_t>(width);
+        configInfo.Viewport.height = static_cast<uint32_t>(height);
+        configInfo.Viewport.minDepth = 0.0f;
+        configInfo.Viewport.maxDepth = 1.0f;
+
+        configInfo.Scissor.offset = { 0, 0 };
+        configInfo.Scissor.extent = { width, height };
 
         configInfo.RasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         configInfo.RasterizationInfo.depthClampEnable = VK_FALSE;
