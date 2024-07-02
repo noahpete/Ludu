@@ -15,9 +15,12 @@ namespace Ludu
         }
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         m_Window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+
+        glfwSetWindowUserPointer(m_Window, this);
+        glfwSetFramebufferSizeCallback(m_Window, OnFrameBufferResize);
     }
 
     VulkanWindow::~VulkanWindow()
@@ -35,5 +38,13 @@ namespace Ludu
         int success = glfwCreateWindowSurface(instance, m_Window, nullptr, surface);
         if (success != VK_SUCCESS)
             LD_CORE_ERROR("Failed to create window surface!");
+    }
+
+    void VulkanWindow::OnFrameBufferResize(GLFWwindow* window, int width, int height)
+    {
+        auto vulkanWindow = reinterpret_cast<VulkanWindow*>(glfwGetWindowUserPointer(window));
+        vulkanWindow->m_FrameBufferResized = true;
+        vulkanWindow->m_Width = width;
+        vulkanWindow->m_Height = height;
     }
 }

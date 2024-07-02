@@ -75,6 +75,8 @@ namespace Ludu
 
         VkPhysicalDeviceProperties properties;
 
+        VkPhysicalDevice getPhysicalDevice() { return physicalDevice; }
+
     private:
         void createInstance();
         void setupDebugMessenger();

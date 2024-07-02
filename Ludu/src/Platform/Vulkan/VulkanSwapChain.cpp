@@ -14,7 +14,7 @@ namespace Ludu
         Init();
     }
 
-    VulkanSwapChain::VulkanSwapChain(VulkanDevice &deviceRef, VkExtent2D extent, std::shared_ptr<VulkanSwapChain> previous)
+    VulkanSwapChain::VulkanSwapChain(VulkanDevice &deviceRef, VkExtent2D extent, Ref<VulkanSwapChain> previous)
         : device{deviceRef}, windowExtent{extent}, oldSwapChain{previous}
     {
         Init();
@@ -191,6 +191,7 @@ namespace Ludu
 
         if (vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS)
         {
+            LD_CORE_ERROR("Failed to create swap chain!");
             throw std::runtime_error("failed to create swap chain!");
         }
 
@@ -405,7 +406,7 @@ namespace Ludu
     {
         for (const auto &availableFormat : availableFormats)
         {
-            if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM &&
+            if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
                 availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
             {
                 return availableFormat;

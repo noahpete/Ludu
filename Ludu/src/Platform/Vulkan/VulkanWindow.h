@@ -25,14 +25,19 @@ namespace Ludu
         VulkanWindow &operator=(const VulkanWindow &) = delete;
 
         bool ShouldClose() override { return glfwWindowShouldClose(m_Window); }
+        bool WasWindowResized() { return m_FrameBufferResized; }
+        void ResetWindowResizedFlag() { m_FrameBufferResized = false; }
 
         void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
     private:
         uint32_t m_Width, m_Height;
         std::string m_Title;
+        bool m_FrameBufferResized = false;
 
         GLFWwindow *m_Window;
+
+        static void OnFrameBufferResize(GLFWwindow* window, int width, int height);
 
     };
 }

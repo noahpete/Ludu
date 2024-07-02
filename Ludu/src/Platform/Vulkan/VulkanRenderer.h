@@ -25,7 +25,8 @@ namespace Ludu
 
     private:
         VulkanDevice m_Device;
-        VulkanSwapChain m_SwapChain;
+        Ref<VulkanWindow> m_Window;
+        Scope<VulkanSwapChain> m_SwapChain;
         Scope<VulkanPipeline> m_Pipeline;
         VkPipelineLayout m_PipelineLayout;
         std::vector<VkCommandBuffer> m_CommandBuffers;
@@ -37,7 +38,11 @@ namespace Ludu
         void CreatePipelineLayout();
         void CreatePipeline();
         void CreateCommandBuffers();
+        void FreeCommandBuffers();
         void DrawFrame();
+
+        void RecreateSwapChain();
+        void RecordCommandBuffer(int imageIndex);
         
     };
 }
