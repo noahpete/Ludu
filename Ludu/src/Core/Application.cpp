@@ -1,6 +1,7 @@
 #include "ldpch.h"
 #include "Application.h"
 
+#include "Core/Input.h"
 
 namespace Ludu
 {
@@ -9,6 +10,9 @@ namespace Ludu
 	Application::Application()
 		: m_Running(true)
 	{
+		LD_CORE_ASSERT(!s_Instance, "Application already exists!");
+		s_Instance = this;
+
 		m_Window = Window::Create(1280, 720, "Ludu");
 		m_Renderer = Renderer::Create(m_Window);
 	}

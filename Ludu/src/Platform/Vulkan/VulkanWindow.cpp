@@ -1,6 +1,8 @@
 #include "ldpch.h"
 #include "VulkanWindow.h"
 
+#include "Core/Input.h"
+
 namespace Ludu
 {
     static bool glfwInitialized = false;

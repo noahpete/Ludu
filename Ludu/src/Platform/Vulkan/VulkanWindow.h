@@ -30,6 +30,8 @@ namespace Ludu
 
         void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
+        void* GetNativeWindow() const override { return m_Window; }
+
     private:
         uint32_t m_Width, m_Height;
         std::string m_Title;

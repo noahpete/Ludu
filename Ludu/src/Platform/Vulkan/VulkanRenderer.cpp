@@ -1,8 +1,18 @@
 #include "ldpch.h"
 #include "VulkanRenderer.h"
 
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+
 namespace Ludu
 {
+    struct SimplePushConstantData
+    {
+        glm::mat2 transform{1.0f};
+        glm::vec2 offset;
+        alignas(16) glm::vec3 color;
+    };
 
     VulkanRenderer::VulkanRenderer(Ref<VulkanWindow> window)
         : m_Window(window), m_Device{ *window }, m_Pipeline{}
@@ -42,12 +52,17 @@ namespace Ludu
 
     void VulkanRenderer::CreatePipelineLayout()
     {
+        VkPushConstantRange pushConstantRange{};
+        pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+        pushConstantRange.offset = 0;
+        pushConstantRange.size = sizeof(SimplePushConstantData);
+
         VkPipelineLayoutCreateInfo info{};
         info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         info.setLayoutCount = 0;
         info.pSetLayouts = nullptr;
-        info.pushConstantRangeCount = 0;
-        info.pPushConstantRanges = nullptr;
+        info.pushConstantRangeCount = 1;
+        info.pPushConstantRanges = &pushConstantRange;
 
         if (vkCreatePipelineLayout(m_Device.device(), &info, nullptr, &m_PipelineLayout) != VK_SUCCESS)
             LD_CORE_ERROR("Failed to create pipeline layout!");
@@ -145,7 +160,16 @@ namespace Ludu
 
         m_Pipeline->Bind(m_CommandBuffers[imageIndex]);
         m_Model->Bind(m_CommandBuffers[imageIndex]);
-        m_Model->Draw(m_CommandBuffers[imageIndex]);
+
+        for (int i = 0; i < 4; i++)
+        {
+            SimplePushConstantData push{};
+            push.offset = { 0.0f, -0.4f + i * 0.25f };
+            push.color = { 0.0f, 0.0f, 0.2f + 0.2f * i };
+
+            vkCmdPushConstants(m_CommandBuffers[imageIndex], m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
+            m_Model->Draw(m_CommandBuffers[imageIndex]);
+        }
 
         vkCmdEndRenderPass(m_CommandBuffers[imageIndex]);
         if (vkEndCommandBuffer(m_CommandBuffers[imageIndex]) != VK_SUCCESS)
@@ -156,8 +180,6 @@ namespace Ludu
     {
         uint32_t imageIndex;
         auto result = m_SwapChain->acquireNextImage(&imageIndex);
-
-        LD_CORE_INFO("DrawFrame!");
 
         // Resize window
         if (result == VK_ERROR_OUT_OF_DATE_KHR)

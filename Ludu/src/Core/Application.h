@@ -19,6 +19,8 @@ namespace Ludu {
 		void OnWindowQuitEvent(QuitEvent& event);
 		void OnWindowResizeEvent(WindowResizeEvent& event);
 
+		Window& GetWindow() { return *m_Window; }
+		
 		static Application& Get() { return *s_Instance; }
 
 	private:
