@@ -1,6 +1,8 @@
 #include "ldpch.h"
 #include "VulkanPipeline.h"
 
+#include "Platform/Vulkan/VulkanModel.h"
+
 namespace Ludu {
 
     VulkanPipeline::VulkanPipeline(VulkanDevice& device, const PipelineConfigInfo& configInfo)
@@ -46,12 +48,15 @@ namespace Ludu {
         shaderStages[1].pNext = nullptr;
         shaderStages[1].pSpecializationInfo = nullptr;
 
+        auto bindingDesc = Vertex::GetBindingDescriptions();
+        auto attributeDesc = Vertex::GetAttributeDescriptions();
+
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexAttributeDescriptionCount = 0;
-        vertexInputInfo.vertexBindingDescriptionCount = 0;
-        vertexInputInfo.pVertexAttributeDescriptions = nullptr;
-        vertexInputInfo.pVertexBindingDescriptions = nullptr;
+        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDesc.size());
+        vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDesc.size());
+        vertexInputInfo.pVertexAttributeDescriptions = attributeDesc.data();
+        vertexInputInfo.pVertexBindingDescriptions = bindingDesc.data();
 
         VkPipelineViewportStateCreateInfo viewportInfo{};
         viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;

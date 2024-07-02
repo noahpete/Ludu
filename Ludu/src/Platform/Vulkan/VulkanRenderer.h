@@ -5,6 +5,7 @@
 #include "Platform/Vulkan/VulkanPipeline.h"
 #include "Platform/Vulkan/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanSwapChain.h"
+#include "Platform/Vulkan/VulkanModel.h"
 
 namespace Ludu
 {
@@ -28,6 +29,10 @@ namespace Ludu
         Scope<VulkanPipeline> m_Pipeline;
         VkPipelineLayout m_PipelineLayout;
         std::vector<VkCommandBuffer> m_CommandBuffers;
+
+        // Temp
+        Scope<VulkanModel> m_Model;
+        void LoadModels();
 
         void CreatePipelineLayout();
         void CreatePipeline();

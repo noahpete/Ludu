@@ -9,6 +9,7 @@ namespace Ludu
           m_SwapChain{m_Device, window->GetExtent()},
           m_Pipeline{}
     {
+        LoadModels();
         CreatePipelineLayout();
         CreatePipeline();
         CreateCommandBuffers();
@@ -27,6 +28,18 @@ namespace Ludu
     void VulkanRenderer::Shutdown()
     {
         vkDeviceWaitIdle(m_Device.device());
+    }
+
+    void VulkanRenderer::LoadModels()
+    {
+        std::vector<Vertex> vertices
+        {
+            { { 0.0f, -0.5f} },
+            { { 0.5f,  0.5f} },
+            { {-0.5f,  0.5f} }
+        };
+
+        m_Model = CreateScope<VulkanModel>(m_Device, vertices);
     }
 
     void VulkanRenderer::CreatePipelineLayout()
@@ -88,7 +101,8 @@ namespace Ludu
             vkCmdBeginRenderPass(m_CommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
             m_Pipeline->Bind(m_CommandBuffers[i]);
-            vkCmdDraw(m_CommandBuffers[i], 3, 1, 0, 0);
+            m_Model->Bind(m_CommandBuffers[i]);
+            m_Model->Draw(m_CommandBuffers[i]);
 
             vkCmdEndRenderPass(m_CommandBuffers[i]);
             if (vkEndCommandBuffer(m_CommandBuffers[i]) != VK_SUCCESS)
