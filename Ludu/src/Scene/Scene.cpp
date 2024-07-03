@@ -13,9 +13,6 @@ namespace Ludu
 
     Scene::Scene()
     {
-        // entt::entity entity = m_Registry.create();
-
-        // m_Registry.emplace<TransformComponent>(entity);
     }
 
     Scene::~Scene()
