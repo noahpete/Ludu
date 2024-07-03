@@ -77,6 +77,8 @@ namespace Ludu
 
         VkPhysicalDevice getPhysicalDevice() { return physicalDevice; }
 
+        static VulkanDevice& Get() { return *s_Instance; }
+
     private:
         void createInstance();
         void setupDebugMessenger();
@@ -94,6 +96,8 @@ namespace Ludu
         void hasGflwRequiredInstanceExtensions();
         bool checkDeviceExtensionSupport(VkPhysicalDevice device);
         SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+
+        static VulkanDevice *s_Instance;
 
         VkInstance instance;
         VkDebugUtilsMessengerEXT debugMessenger;

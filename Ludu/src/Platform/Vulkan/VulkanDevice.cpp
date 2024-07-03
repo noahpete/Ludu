@@ -9,6 +9,7 @@
 
 namespace Ludu
 {
+    VulkanDevice* VulkanDevice::s_Instance;
 
     // local callback functions
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -62,6 +63,8 @@ namespace Ludu
     // class member functions
     VulkanDevice::VulkanDevice(VulkanWindow &window) : window{window}
     {
+        s_Instance = this;
+        
         createInstance();
         setupDebugMessenger();
         createSurface();
