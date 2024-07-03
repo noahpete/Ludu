@@ -47,6 +47,7 @@ target_include_directories("${PROJECT_NAME}_lib"
     "Ludu/external/vk-bootstrap/src"
     "Ludu/external/spdlog/include"
     "Ludu/external/glfw/include"
+    "Ludu/external/entt/src"
 )
 
 # Link libraries to the Sandbox executable
