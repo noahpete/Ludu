@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Core/Window.h"
+#include "Core/Layer.h"
+#include "Core/LayerStack.h"
+
 #include "Events/EventManager.h"
 #include "Renderer/Renderer.h"
 
@@ -16,6 +19,9 @@ namespace Ludu {
 
 		void Run();
 
+		void PushLayer(Layer* layer);
+		void PushOverlay(Layer* layer);
+
 		void OnWindowQuitEvent(QuitEvent& event);
 		void OnWindowResizeEvent(WindowResizeEvent& event);
 
@@ -26,6 +32,8 @@ namespace Ludu {
 	private:
 		static Application* s_Instance;
 		bool m_Running;
+
+		LayerStack m_LayerStack;
 
 		Ref<Window> m_Window;
 		Ref<Renderer> m_Renderer;

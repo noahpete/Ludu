@@ -25,15 +25,32 @@ namespace Ludu
 	{
 		while (m_Running)
 		{
+			Timestep ts = 1.0f / 60.0f;
+
 			m_Window->OnUpdate();
 
 			if (m_Window->ShouldClose())
 				m_Running = false;
+
+			for (Layer* layer : m_LayerStack)
+				layer->OnUpdate(ts);
 
 			m_Renderer->OnUpdate();
 		}
 
 		m_Renderer->Shutdown();
 
+	}
+
+    void Application::PushLayer(Layer *layer)
+    {
+		m_LayerStack.PushLayer(layer);
+		layer->OnAttach();
+    }
+
+	void Application::PushOverlay(Layer *layer)
+	{
+		m_LayerStack.PushOverlay(layer);
+		layer->OnAttach();
 	}
 }
