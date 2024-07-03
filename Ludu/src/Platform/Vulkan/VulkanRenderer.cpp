@@ -47,7 +47,7 @@ namespace Ludu
             { {-0.5f,  0.5f}, {0.0f, 0.0f, 1.0f} }
         };
 
-        m_Model = CreateScope<VulkanModel>(m_Device, vertices);
+        m_Model = CreateScope<VulkanModel>(vertices);
     }
 
     void VulkanRenderer::CreatePipelineLayout()

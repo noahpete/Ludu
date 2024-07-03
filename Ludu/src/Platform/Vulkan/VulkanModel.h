@@ -22,7 +22,7 @@ namespace Ludu
     class VulkanModel
     {
     public:
-        VulkanModel(VulkanDevice &device, const std::vector<Vertex> &vertices);
+        VulkanModel(const std::vector<Vertex> &vertices);
         ~VulkanModel();
 
         VulkanModel(const VulkanModel &) = delete;

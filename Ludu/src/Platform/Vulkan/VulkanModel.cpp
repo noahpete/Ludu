@@ -4,8 +4,8 @@
 namespace Ludu
 {
 
-    VulkanModel::VulkanModel(VulkanDevice &device, const std::vector<Vertex> &vertices)
-        : m_Device{device}
+    VulkanModel::VulkanModel(const std::vector<Vertex> &vertices)
+        : m_Device{VulkanDevice::Get()}
     {
         CreateVertexBuffers(vertices);
     }
