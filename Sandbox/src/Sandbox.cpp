@@ -15,6 +15,8 @@ public:
 			{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
 
 		m_Entity.AddComponent<Ludu::MeshComponent>(vertices);
+		m_Entity.GetComponent<Ludu::MeshComponent>().Color = { 0.2f, 0.3f, 0.8f };
+		m_Entity.GetComponent<Ludu::TransformComponent>().Scale2D = { 2.0f, 0.5f };
 	}
 
 	~ExampleLayer()
