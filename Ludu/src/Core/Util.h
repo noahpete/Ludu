@@ -3,6 +3,9 @@
 #include "ldpch.h"
 #include "Core/Core.h"
 
+#include <random>
+#include <cstdint>
+
 namespace Util {
 
 	static std::vector<char> ReadFile(const std::string& filepath)
@@ -20,6 +23,15 @@ namespace Util {
 
 		file.close();
 		return buffer;
+	}
+
+	static uint64_t GenerateUUID()
+	{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<uint64_t> dis;
+
+		return dis(gen);
 	}
 
 }
