@@ -5,6 +5,8 @@
 //#include "Renderer/Camera.h"
 //#include "Scene/ScriptableEntity.h"
 
+#include "Platform/Vulkan/VulkanModel.h"
+
 namespace Ludu {
 
     struct TagComponent
@@ -23,6 +25,9 @@ namespace Ludu {
         glm::vec2 Scale;
         float Rotation;
 
+        glm::vec2 Translation2D{};
+        glm::mat2 GetMat2() { return glm::mat2{1.0f}; }
+
         TransformComponent() = default;
         TransformComponent(const TransformComponent&) = default;
         TransformComponent(const glm::vec2 position, glm::vec2 scale, float rotation)
@@ -37,6 +42,17 @@ namespace Ludu {
         SpriteRendererComponent(const SpriteRendererComponent&) = default;
         SpriteRendererComponent(const glm::vec4& color)
             : Color(color) {}
+    };
+
+    struct MeshComponent
+    {
+        Ref<VulkanModel> Model;
+        glm::vec3 Color = { 1.0f, 1.0f, 1.0f };
+
+        MeshComponent(std::vector<Ludu::Vertex>& vertices)
+        {
+            Model = CreateRef<VulkanModel>(vertices);
+        }
     };
 
     //struct CameraComponent

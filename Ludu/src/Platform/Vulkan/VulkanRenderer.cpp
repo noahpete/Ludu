@@ -5,8 +5,12 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
+#include "Scene/Components.h"
+
 namespace Ludu
 {
+    Renderer* Renderer::s_Instance = nullptr;
+
     struct SimplePushConstantData
     {
         glm::mat2 transform{1.0f};
@@ -17,6 +21,8 @@ namespace Ludu
     VulkanRenderer::VulkanRenderer(Ref<VulkanWindow> window)
         : m_Window(window), m_Device{ *window }, m_Pipeline{}
     {
+        s_Instance = this;
+
         LoadModels();
         CreatePipelineLayout();
         RecreateSwapChain();
@@ -36,6 +42,11 @@ namespace Ludu
     void VulkanRenderer::Shutdown()
     {
         vkDeviceWaitIdle(m_Device.device());
+    }
+
+    void VulkanRenderer::Submit(Entity* entity)
+    {
+        m_RenderQueue.push_back(entity);
     }
 
     void VulkanRenderer::LoadModels()
@@ -158,22 +169,31 @@ namespace Ludu
         vkCmdSetViewport(m_CommandBuffers[imageIndex], 0, 1, &viewport);
         vkCmdSetScissor(m_CommandBuffers[imageIndex], 0, 1, &scissor);
 
-        m_Pipeline->Bind(m_CommandBuffers[imageIndex]);
-        m_Model->Bind(m_CommandBuffers[imageIndex]);
-
-        for (int i = 0; i < 4; i++)
-        {
-            SimplePushConstantData push{};
-            push.offset = { 0.0f, -0.4f + i * 0.25f };
-            push.color = { 0.0f, 0.0f, 0.2f + 0.2f * i };
-
-            vkCmdPushConstants(m_CommandBuffers[imageIndex], m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
-            m_Model->Draw(m_CommandBuffers[imageIndex]);
-        }
+        RenderScene(m_CommandBuffers[imageIndex]);
 
         vkCmdEndRenderPass(m_CommandBuffers[imageIndex]);
         if (vkEndCommandBuffer(m_CommandBuffers[imageIndex]) != VK_SUCCESS)
             LD_CORE_ERROR("Failed to record command buffer!");
+    }
+
+    void VulkanRenderer::RenderScene(VkCommandBuffer commandBuffer)
+    {
+        m_Pipeline->Bind(commandBuffer);
+
+        for (auto entity : m_RenderQueue)
+        {
+            SimplePushConstantData push{};
+            push.offset = entity->GetComponent<TransformComponent>().Translation2D;
+            push.color = entity->GetComponent<MeshComponent>().Color;
+            push.transform = entity->GetComponent<TransformComponent>().GetMat2();
+
+            vkCmdPushConstants(commandBuffer, m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
+
+            entity->GetComponent<MeshComponent>().Model->Bind(commandBuffer);
+            entity->GetComponent<MeshComponent>().Model->Draw(commandBuffer);
+        }
+
+        m_RenderQueue.clear();
     }
 
     void VulkanRenderer::DrawFrame()

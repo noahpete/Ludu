@@ -17,8 +17,9 @@ namespace Ludu
         ~VulkanRenderer();
 
         void OnUpdate() override;
-
         void Shutdown() override;
+
+        void Submit(Entity* entity) override;
 
         VulkanRenderer(const VulkanRenderer &) = delete;
         VulkanRenderer &operator=(const VulkanRenderer &) = delete;
@@ -30,6 +31,8 @@ namespace Ludu
         Scope<VulkanPipeline> m_Pipeline;
         VkPipelineLayout m_PipelineLayout;
         std::vector<VkCommandBuffer> m_CommandBuffers;
+
+        std::vector<Entity*> m_RenderQueue;
 
         // Temp
         Scope<VulkanModel> m_Model;
@@ -43,6 +46,7 @@ namespace Ludu
 
         void RecreateSwapChain();
         void RecordCommandBuffer(int imageIndex);
+        void RenderScene(VkCommandBuffer commandBuffer);
         
     };
 }
