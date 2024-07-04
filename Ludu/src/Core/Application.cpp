@@ -1,6 +1,7 @@
 #include "ldpch.h"
 #include "Application.h"
 
+#include "Renderer/Camera.h"
 #include "Core/Input.h"
 
 namespace Ludu
@@ -23,6 +24,8 @@ namespace Ludu
 
 	void Application::Run()
 	{
+		Camera defaultCamera{};
+
 		while (m_Running)
 		{
 			Timestep ts = 1.0f / 60.0f;
@@ -35,7 +38,9 @@ namespace Ludu
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate(ts);
 
-			m_Renderer->OnUpdate();
+			defaultCamera.SetPerspectiveProjection(glm::radians(50.0f), m_Renderer->GetAspectRatio(), 0.1f, 10.0f);
+
+			m_Renderer->OnUpdate(defaultCamera);
 		}
 
 		m_Renderer->Shutdown();

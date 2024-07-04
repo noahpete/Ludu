@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Renderer/Renderer.h"
+#include "Renderer/Camera.h"
+
 #include "Platform/Vulkan/VulkanWindow.h"
 #include "Platform/Vulkan/VulkanPipeline.h"
 #include "Platform/Vulkan/VulkanDevice.h"
@@ -16,13 +18,15 @@ namespace Ludu
         VulkanRenderer(Ref<VulkanWindow> window);
         ~VulkanRenderer();
 
-        void OnUpdate() override;
+        void OnUpdate(const Camera& camera) override;
         void Shutdown() override;
 
         void Submit(Entity* entity) override;
 
         void BeginFrame();
         void EndFrame();
+
+        float GetAspectRatio() const override { return m_SwapChain->extentAspectRatio(); }
 
         VulkanRenderer(const VulkanRenderer &) = delete;
         VulkanRenderer &operator=(const VulkanRenderer &) = delete;
@@ -36,7 +40,6 @@ namespace Ludu
         std::vector<VkCommandBuffer> m_CommandBuffers;
 
         std::vector<Entity*> m_RenderQueue;
-
         uint32_t m_ImageIndex;
         bool m_FrameStarted;
 
@@ -46,8 +49,7 @@ namespace Ludu
         void FreeCommandBuffers();
 
         void RecreateSwapChain();
-        void RecordCommandBuffer(int imageIndex);
-        void RenderScene(VkCommandBuffer commandBuffer);
+        void RenderScene(const Camera& camera);
         
     };
 }

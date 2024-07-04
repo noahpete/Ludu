@@ -34,10 +34,10 @@ namespace Ludu
         vkDestroyPipelineLayout(m_Device.device(), m_PipelineLayout, nullptr);
     }
 
-    void VulkanRenderer::OnUpdate()
+    void VulkanRenderer::OnUpdate(const Camera& camera)
     {
         BeginFrame();
-        RenderScene(m_CommandBuffers[m_ImageIndex]);
+        RenderScene(camera);
         EndFrame();
     }
 
@@ -197,20 +197,20 @@ namespace Ludu
         CreatePipeline();
     }
 
-    void VulkanRenderer::RenderScene(VkCommandBuffer commandBuffer)
+    void VulkanRenderer::RenderScene(const Camera& camera)
     {
-        m_Pipeline->Bind(commandBuffer);
+        m_Pipeline->Bind(m_CommandBuffers[m_ImageIndex]);
 
         for (auto entity : m_RenderQueue)
         {
             SimplePushConstantData push{};
             push.color = entity->GetComponent<MeshComponent>().Color;
-            push.transform = entity->GetComponent<TransformComponent>().GetTransform();
+            push.transform = camera.GetProjection() * entity->GetComponent<TransformComponent>().GetTransform();
 
-            vkCmdPushConstants(commandBuffer, m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
+            vkCmdPushConstants(m_CommandBuffers[m_ImageIndex], m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
 
-            entity->GetComponent<MeshComponent>().Model->Bind(commandBuffer);
-            entity->GetComponent<MeshComponent>().Model->Draw(commandBuffer);
+            entity->GetComponent<MeshComponent>().Model->Bind(m_CommandBuffers[m_ImageIndex]);
+            entity->GetComponent<MeshComponent>().Model->Draw(m_CommandBuffers[m_ImageIndex]);
         }
 
         m_RenderQueue.clear();
