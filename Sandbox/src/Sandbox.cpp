@@ -60,7 +60,7 @@ public:
         };
 
 		m_Entity.AddComponent<Ludu::MeshComponent>(vertices);
-        m_Entity.GetComponent<Ludu::TransformComponent>().Translation = { 0.0f, 0.0f, 0.5f };
+        m_Entity.GetComponent<Ludu::TransformComponent>().Translation = { 0.0f, 0.0f, 2.5f };
         m_Entity.GetComponent<Ludu::TransformComponent>().Scale = { 0.5f, 0.5f, 0.5f };
 
 	}
