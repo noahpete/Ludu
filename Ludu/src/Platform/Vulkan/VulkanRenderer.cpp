@@ -13,8 +13,7 @@ namespace Ludu
 
     struct SimplePushConstantData
     {
-        glm::mat2 transform{1.0f};
-        glm::vec2 offset;
+        glm::mat4 transform{1.0f};
         alignas(16) glm::vec3 color;
     };
 
@@ -51,14 +50,7 @@ namespace Ludu
 
     void VulkanRenderer::LoadModels()
     {
-        std::vector<Vertex> vertices
-        {
-            { { 0.0f, -0.5f}, {1.0f, 0.0f, 0.0f} },
-            { { 0.5f,  0.5f}, {0.0f, 1.0f, 0.0f} },
-            { {-0.5f,  0.5f}, {0.0f, 0.0f, 1.0f} }
-        };
-
-        m_Model = CreateScope<VulkanModel>(vertices);
+        
     }
 
     void VulkanRenderer::CreatePipelineLayout()
@@ -183,9 +175,8 @@ namespace Ludu
         for (auto entity : m_RenderQueue)
         {
             SimplePushConstantData push{};
-            push.offset = entity->GetComponent<TransformComponent>().Translation2D;
             push.color = entity->GetComponent<MeshComponent>().Color;
-            push.transform = entity->GetComponent<TransformComponent>().GetMat2();
+            push.transform = entity->GetComponent<TransformComponent>().GetTransform();
 
             vkCmdPushConstants(commandBuffer, m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
 
