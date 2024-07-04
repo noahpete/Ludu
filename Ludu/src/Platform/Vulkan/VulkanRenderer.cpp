@@ -1,3 +1,5 @@
+#include "VulkanRenderer.h"
+#include "VulkanRenderer.h"
 #include "ldpch.h"
 #include "VulkanRenderer.h"
 
@@ -22,7 +24,6 @@ namespace Ludu
     {
         s_Instance = this;
 
-        LoadModels();
         CreatePipelineLayout();
         RecreateSwapChain();
         CreateCommandBuffers();
@@ -35,7 +36,9 @@ namespace Ludu
 
     void VulkanRenderer::OnUpdate()
     {
-        DrawFrame();
+        BeginFrame();
+        RenderScene(m_CommandBuffers[m_ImageIndex]);
+        EndFrame();
     }
 
     void VulkanRenderer::Shutdown()
@@ -48,9 +51,77 @@ namespace Ludu
         m_RenderQueue.push_back(entity);
     }
 
-    void VulkanRenderer::LoadModels()
+    void VulkanRenderer::BeginFrame()
     {
-        
+        LD_CORE_ASSERT(!m_FrameStarted);
+
+        auto result = m_SwapChain->acquireNextImage(&m_ImageIndex);
+
+        // Resize window
+        if (result == VK_ERROR_OUT_OF_DATE_KHR)
+        {
+            RecreateSwapChain();
+            return;
+        }
+
+        if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+            LD_CORE_ERROR("Failed to acquire swap chain image!");
+
+        m_FrameStarted = true;
+
+        // Begin swap chain render pass
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+        if (vkBeginCommandBuffer(m_CommandBuffers[m_ImageIndex], &beginInfo) != VK_SUCCESS)
+            LD_CORE_ERROR("Failed to begin recording command buffer!");
+
+        VkRenderPassBeginInfo renderPassInfo{};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = m_SwapChain->getRenderPass();
+        renderPassInfo.framebuffer = m_SwapChain->getFrameBuffer(m_ImageIndex);
+
+        renderPassInfo.renderArea.offset = { 0, 0 };
+        renderPassInfo.renderArea.extent = m_SwapChain->getSwapChainExtent();
+
+        std::array<VkClearValue, 2> clearValues{};
+        clearValues[0].color = { 0.1, 0.1, 0.1, 1.0f };
+        clearValues[1].depthStencil = { 1, 0 };
+        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+        renderPassInfo.pClearValues = clearValues.data();
+
+        vkCmdBeginRenderPass(m_CommandBuffers[m_ImageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = static_cast<float>(m_SwapChain->getSwapChainExtent().width);
+        viewport.height = static_cast<float>(m_SwapChain->getSwapChainExtent().height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        VkRect2D scissor{ {0, 0}, m_SwapChain->getSwapChainExtent() };
+        vkCmdSetViewport(m_CommandBuffers[m_ImageIndex], 0, 1, &viewport);
+        vkCmdSetScissor(m_CommandBuffers[m_ImageIndex], 0, 1, &scissor);
+    }
+
+    void VulkanRenderer::EndFrame()
+    {
+        // End swap chain render pass
+        vkCmdEndRenderPass(m_CommandBuffers[m_ImageIndex]);
+        if (vkEndCommandBuffer(m_CommandBuffers[m_ImageIndex]) != VK_SUCCESS)
+            LD_CORE_ERROR("Failed to record command buffer!");
+
+        auto result = m_SwapChain->submitCommandBuffers(&m_CommandBuffers[m_ImageIndex], &m_ImageIndex);
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_Window->WasWindowResized())
+        {
+            m_Window->ResetWindowResizedFlag();
+            RecreateSwapChain();
+        }
+
+        //if (result != VK_SUCCESS)
+        //    LD_CORE_ERROR("Failed to present swap chain image!");
+
+        m_FrameStarted = false;
     }
 
     void VulkanRenderer::CreatePipelineLayout()
@@ -126,48 +197,6 @@ namespace Ludu
         CreatePipeline();
     }
 
-    void VulkanRenderer::RecordCommandBuffer(int imageIndex)
-    {
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-        if (vkBeginCommandBuffer(m_CommandBuffers[imageIndex], &beginInfo) != VK_SUCCESS)
-            LD_CORE_ERROR("Failed to begin recording command buffer!");
-
-        VkRenderPassBeginInfo renderPassInfo{};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = m_SwapChain->getRenderPass();
-        renderPassInfo.framebuffer = m_SwapChain->getFrameBuffer(imageIndex);
-
-        renderPassInfo.renderArea.offset = { 0, 0 };
-        renderPassInfo.renderArea.extent = m_SwapChain->getSwapChainExtent();
-
-        std::array<VkClearValue, 2> clearValues{};
-        clearValues[0].color = { 0.1, 0.1, 0.1, 1.0f };
-        clearValues[1].depthStencil = { 1, 0 };
-        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-        renderPassInfo.pClearValues = clearValues.data();
-
-        vkCmdBeginRenderPass(m_CommandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-        VkViewport viewport{};
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = static_cast<float>(m_SwapChain->getSwapChainExtent().width);
-        viewport.height = static_cast<float>(m_SwapChain->getSwapChainExtent().height);
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        VkRect2D scissor{ {0, 0}, m_SwapChain->getSwapChainExtent() };
-        vkCmdSetViewport(m_CommandBuffers[imageIndex], 0, 1, &viewport);
-        vkCmdSetScissor(m_CommandBuffers[imageIndex], 0, 1, &scissor);
-
-        RenderScene(m_CommandBuffers[imageIndex]);
-
-        vkCmdEndRenderPass(m_CommandBuffers[imageIndex]);
-        if (vkEndCommandBuffer(m_CommandBuffers[imageIndex]) != VK_SUCCESS)
-            LD_CORE_ERROR("Failed to record command buffer!");
-    }
-
     void VulkanRenderer::RenderScene(VkCommandBuffer commandBuffer)
     {
         m_Pipeline->Bind(commandBuffer);
@@ -185,33 +214,5 @@ namespace Ludu
         }
 
         m_RenderQueue.clear();
-    }
-
-    void VulkanRenderer::DrawFrame()
-    {
-        uint32_t imageIndex;
-        auto result = m_SwapChain->acquireNextImage(&imageIndex);
-
-        // Resize window
-        if (result == VK_ERROR_OUT_OF_DATE_KHR)
-        {
-            RecreateSwapChain();
-            return;
-        }
-
-        if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-            LD_CORE_ERROR("Failed to acquire swap chain image!");
-
-        RecordCommandBuffer(imageIndex);
-        result = m_SwapChain->submitCommandBuffers(&m_CommandBuffers[imageIndex], &imageIndex);
-        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_Window->WasWindowResized())
-        {
-            m_Window->ResetWindowResizedFlag();
-            RecreateSwapChain();
-            return;
-        }
-
-        if (result != VK_SUCCESS)
-            LD_CORE_ERROR("Failed to present swap chain image!");
     }
 }

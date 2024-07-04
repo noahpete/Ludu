@@ -21,6 +21,9 @@ namespace Ludu
 
         void Submit(Entity* entity) override;
 
+        void BeginFrame();
+        void EndFrame();
+
         VulkanRenderer(const VulkanRenderer &) = delete;
         VulkanRenderer &operator=(const VulkanRenderer &) = delete;
 
@@ -34,15 +37,13 @@ namespace Ludu
 
         std::vector<Entity*> m_RenderQueue;
 
-        // Temp
-        Scope<VulkanModel> m_Model;
-        void LoadModels();
+        uint32_t m_ImageIndex;
+        bool m_FrameStarted;
 
         void CreatePipelineLayout();
         void CreatePipeline();
         void CreateCommandBuffers();
         void FreeCommandBuffers();
-        void DrawFrame();
 
         void RecreateSwapChain();
         void RecordCommandBuffer(int imageIndex);
