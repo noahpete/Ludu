@@ -1,7 +1,10 @@
 #pragma once
 
 #include "ldpch.h"
+
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 // #include "Renderer/Camera.h"
 // #include "Scene/ScriptableEntity.h"
 
@@ -22,27 +25,24 @@ namespace Ludu
 
     struct TransformComponent
     {
-        glm::vec2 Position;
-        glm::vec2 Scale;
-        float Rotation;
+        glm::vec3 Translation{ 0.0f };
+        glm::vec3 Rotation{ 0.0f };
+        glm::vec3 Scale{ 1.0f };
 
-        glm::vec2 Translation2D{};
-        glm::vec2 Scale2D{1.0f, 1.0f};
-        float Rotation2D;
-        glm::mat2 GetMat2()
+        glm::mat4 GetTransform()
         {
-            const float s = glm::sin(Rotation2D);
-            const float c = glm::cos(Rotation2D);
-            glm::mat2 rotMatrix{{c, s}, {-s, c}};
-
-            glm::mat2 scaleMat{{Scale2D.x, 0.0f}, {0.0f, Scale2D.y}};
-            return rotMatrix * scaleMat;
+            auto transform = glm::translate(glm::mat4{ 1.0f }, Translation);
+            transform = glm::rotate(transform, Rotation.x, { 1.0f, 0.0f, 0.0f });
+            transform = glm::rotate(transform, Rotation.y, { 0.0f, 1.0f, 0.0f });
+            transform = glm::rotate(transform, Rotation.z, { 0.0f, 0.0f, 1.0f });
+            transform = glm::scale(transform, Scale);
+            return transform;
         }
 
         TransformComponent() = default;
         TransformComponent(const TransformComponent &) = default;
-        TransformComponent(const glm::vec2 position, glm::vec2 scale, float rotation)
-            : Position(position), Scale(scale), Rotation(rotation) {}
+        TransformComponent(const glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale)
+            : Translation(translation), Rotation(rotation), Scale(scale) {}
     };
 
     struct SpriteRendererComponent
