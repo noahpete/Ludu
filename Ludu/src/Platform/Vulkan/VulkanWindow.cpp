@@ -3,6 +3,11 @@
 
 #include "Events/EventManager.h"
 
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
+
+#include <imgui/imgui_impl_glfw.h>
+
 namespace Ludu
 {
     static bool glfwInitialized = false;
@@ -30,6 +35,26 @@ namespace Ludu
         {
             EventManager::Publish<WindowResizeEvent>(WindowResizeEvent(width, height));
         });
+
+        glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
+            {
+                ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+            });
+
+        glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xoffset, double yoffset)
+            {
+                ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+            });
+
+        glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+            {
+                ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+            });
+
+        glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int c)
+            {
+                ImGui_ImplGlfw_CharCallback(window, c);
+            });
     }
 
     VulkanWindow::~VulkanWindow()
