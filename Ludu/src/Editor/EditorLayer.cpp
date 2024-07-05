@@ -45,6 +45,9 @@ namespace Ludu {
             pos.x += 0.05f;
         }
 
+        rot.x = glm::clamp(rot.x, -1.5f, 1.5f);
+        rot.y = glm::mod(rot.y, 6.28f);
+
         m_Camera->SetViewYXZ(pos, rot);
     }
 }
