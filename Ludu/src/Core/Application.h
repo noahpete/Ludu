@@ -35,6 +35,7 @@ namespace Ludu {
 	private:
 		static Application* s_Instance;
 		bool m_Running;
+		float m_LastFrameTime;
 
 		LayerStack m_LayerStack;
 		ImGuiLayer* m_ImGuiLayer;

@@ -5,6 +5,8 @@
 
 #include "Core/Input.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Ludu
 {
 	Application *Application::s_Instance = nullptr;
@@ -20,6 +22,8 @@ namespace Ludu
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushLayer(m_ImGuiLayer);
+
+		m_LastFrameTime = Util::GetTime();
 	}
 
 	Application::~Application()
@@ -34,7 +38,11 @@ namespace Ludu
 		{
 			// Update
 
-			Timestep ts = 1.0f / 60.0f;
+			float curTime = Util::GetTime();
+			Timestep ts = curTime - m_LastFrameTime;
+			m_LastFrameTime = curTime;
+
+			LD_CORE_INFO("Ts: {0}", float(ts));
 
 			m_Window->OnUpdate();
 

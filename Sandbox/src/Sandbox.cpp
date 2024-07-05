@@ -72,8 +72,8 @@ public:
 	void OnUpdate(Ludu::Timestep ts) override
 	{
 		Ludu::Renderer::Get().Submit(&m_Entity);
-        m_Entity.GetComponent<Ludu::TransformComponent>().Rotation.y += 0.01f * ts;
-        m_Entity.GetComponent<Ludu::TransformComponent>().Rotation.x += 0.005f * ts;
+        m_Entity.GetComponent<Ludu::TransformComponent>().Rotation.y += 1.0f * ts;
+        m_Entity.GetComponent<Ludu::TransformComponent>().Rotation.x += 0.5f * ts;
 	}
 
 private:

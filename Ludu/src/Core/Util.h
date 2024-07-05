@@ -33,4 +33,9 @@ namespace Util {
 		return dis(gen);
 	}
 
+	static double GetTime()
+	{
+		return std::clock() / 100000.0f;
+	}
+
 }
