@@ -8,6 +8,7 @@
 #include "Renderer/Renderer.h"
 
 #include "Editor/ImGuiLayer.h"
+#include "Editor/EditorLayer.h"
 
 
 int main(int argc, char* argv[]);
@@ -28,6 +29,8 @@ namespace Ludu {
 		void OnWindowQuitEvent(QuitEvent& event);
 		void OnWindowResizeEvent(WindowResizeEvent& event);
 
+		Ref<Camera> GetPrimaryCamera();
+
 		Window& GetWindow() { return *m_Window; }
 		
 		static Application& Get() { return *s_Instance; }
@@ -39,6 +42,7 @@ namespace Ludu {
 
 		LayerStack m_LayerStack;
 		ImGuiLayer* m_ImGuiLayer;
+		EditorLayer* m_EditorLayer;
 
 		Ref<Window> m_Window;
 		Ref<Renderer> m_Renderer;

@@ -1,8 +1,8 @@
 #pragma once
 
+#include "ldpch.h"
 #include "Core/Core.h"
 #include "Core/Timestep.h"
-#include "ldpch.h"
 #include "Events/Event.h"
 
 namespace Ludu {

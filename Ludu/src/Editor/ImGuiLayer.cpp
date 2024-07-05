@@ -38,6 +38,11 @@ namespace Ludu
 
     void ImGuiLayer::End()
     {
+        ImGuiIO& io = ImGui::GetIO();
+        auto width = Application::Get().GetWindow().GetWidth();
+        auto height = Application::Get().GetWindow().GetHeight();
+        io.DisplaySize = ImVec2(width, height);
+
         ImGui::Render();
         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), dynamic_cast<VulkanRenderer*>(&Renderer::Get())->GetCurrentCommandBuffer());
     }

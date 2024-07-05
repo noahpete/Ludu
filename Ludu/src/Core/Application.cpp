@@ -23,6 +23,9 @@ namespace Ludu
 		m_ImGuiLayer = new ImGuiLayer();
 		PushLayer(m_ImGuiLayer);
 
+		m_EditorLayer = new EditorLayer();
+		PushLayer(m_EditorLayer);
+
 		m_LastFrameTime = Util::GetTime();
 	}
 
@@ -32,8 +35,6 @@ namespace Ludu
 
 	void Application::Run()
 	{
-		Ref<Camera> camera = CreateRef<Camera>();
-
 		while (m_Running)
 		{
 			// Update
@@ -54,12 +55,14 @@ namespace Ludu
 
 			m_Renderer->Begin();
 
+			auto camera = GetPrimaryCamera();
 			camera->SetPerspectiveProjection(glm::radians(50.0f), m_Renderer->GetAspectRatio(), 0.1f, 10.0f);
 			 
 			m_Renderer->OnUpdate(*camera);
 
 			m_ImGuiLayer->Begin();
-			ImGui::ShowDemoWindow();
+			for (Layer* layer : m_LayerStack)
+				layer->OnImGuiRender();
 			m_ImGuiLayer->End();
 
 			m_Renderer->End();
@@ -80,4 +83,9 @@ namespace Ludu
 		m_LayerStack.PushOverlay(layer);
 		layer->OnAttach();
 	}
+
+    Ref<Camera> Application::GetPrimaryCamera()
+    {
+        return m_EditorLayer->GetEditorCamera();
+    }
 }
