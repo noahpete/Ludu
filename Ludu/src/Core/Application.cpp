@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include "Renderer/Camera.h"
+
 #include "Core/Input.h"
 
 namespace Ludu
@@ -16,6 +17,9 @@ namespace Ludu
 
 		m_Window = Window::Create(1280, 720, "Ludu");
 		m_Renderer = Renderer::Create(m_Window);
+
+		m_ImGuiLayer = new ImGuiLayer();
+		PushLayer(m_ImGuiLayer);
 	}
 
 	Application::~Application()
@@ -24,10 +28,12 @@ namespace Ludu
 
 	void Application::Run()
 	{
-		Camera defaultCamera{};
+		Ref<Camera> camera = CreateRef<Camera>();
 
 		while (m_Running)
 		{
+			// Update
+
 			Timestep ts = 1.0f / 60.0f;
 
 			m_Window->OnUpdate();
@@ -38,9 +44,19 @@ namespace Ludu
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate(ts);
 
-			defaultCamera.SetPerspectiveProjection(glm::radians(50.0f), m_Renderer->GetAspectRatio(), 0.1f, 10.0f);
+			// Render
 
-			m_Renderer->OnUpdate(defaultCamera);
+			m_Renderer->Begin();
+
+			camera->SetPerspectiveProjection(glm::radians(50.0f), m_Renderer->GetAspectRatio(), 0.1f, 10.0f);
+			 
+			m_Renderer->OnUpdate(*camera);
+
+			m_ImGuiLayer->Begin();
+			ImGui::ShowDemoWindow();
+			m_ImGuiLayer->End();
+
+			m_Renderer->End();
 		}
 
 		m_Renderer->Shutdown();

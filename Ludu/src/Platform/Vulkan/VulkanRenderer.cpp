@@ -1,7 +1,5 @@
 #include "VulkanRenderer.h"
-#include "VulkanRenderer.h"
 #include "ldpch.h"
-#include "VulkanRenderer.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -36,9 +34,7 @@ namespace Ludu
 
     void VulkanRenderer::OnUpdate(const Camera& camera)
     {
-        BeginFrame();
         RenderScene(camera);
-        EndFrame();
     }
 
     void VulkanRenderer::Shutdown()
@@ -51,7 +47,7 @@ namespace Ludu
         m_RenderQueue.push_back(entity);
     }
 
-    void VulkanRenderer::BeginFrame()
+    void VulkanRenderer::Begin()
     {
         LD_CORE_ASSERT(!m_FrameStarted);
 
@@ -104,7 +100,7 @@ namespace Ludu
         vkCmdSetScissor(m_CommandBuffers[m_ImageIndex], 0, 1, &scissor);
     }
 
-    void VulkanRenderer::EndFrame()
+    void VulkanRenderer::End()
     {
         // End swap chain render pass
         vkCmdEndRenderPass(m_CommandBuffers[m_ImageIndex]);
@@ -122,6 +118,72 @@ namespace Ludu
         //    LD_CORE_ERROR("Failed to present swap chain image!");
 
         m_FrameStarted = false;
+    }
+
+    void VulkanRenderer::InitImGui()
+    {
+        VkDescriptorPoolSize pool_sizes[] =
+        {
+            { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
+            { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
+            { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
+            { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+        };
+
+        VkDescriptorPoolCreateInfo pool_info = {};
+        pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+        pool_info.maxSets = 1000;
+        pool_info.poolSizeCount = std::size(pool_sizes);
+        pool_info.pPoolSizes = pool_sizes;
+
+        VkDescriptorPool imguiPool;
+        vkCreateDescriptorPool(m_Device.device(), &pool_info, nullptr, &imguiPool);
+
+
+        // 2: initialize imgui library
+
+        //this initializes the core structures of imgui
+        ImGui::CreateContext();
+
+        //this initializes imgui for SDL
+        ImGui_ImplGlfw_InitForVulkan(reinterpret_cast<GLFWwindow*>(m_Window->GetNativeWindow()), false);
+
+        //this initializes imgui for Vulkan
+        ImGui_ImplVulkan_InitInfo init_info = {};
+        init_info.Instance = m_Device.GetInstance();
+        init_info.PhysicalDevice = m_Device.getPhysicalDevice();
+        init_info.Device = m_Device.device();
+        init_info.Queue = m_Device.graphicsQueue();
+        init_info.DescriptorPool = imguiPool;
+        init_info.MinImageCount = 3;
+        init_info.ImageCount = 3;
+        init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+        init_info.RenderPass = m_SwapChain->getRenderPass();
+
+        ImGui_ImplVulkan_Init(&init_info);
+
+        //execute a gpu command to upload imgui font textures
+        /*immediate_submit([&](VkCommandBuffer cmd) {
+            ImGui_ImplVulkan_CreateFontsTexture(cmd);
+            });*/
+
+        //clear font textures from cpu data
+        //ImGui_ImplVulkan_DestroyFontUploadObjects();
+
+        //add the destroy the imgui created structures
+        /*_mainDeletionQueue.push_function([=]() {
+
+            vkDestroyDescriptorPool(_device, imguiPool, nullptr);
+            ImGui_ImplVulkan_Shutdown();
+            });*/
     }
 
     void VulkanRenderer::CreatePipelineLayout()
@@ -201,11 +263,13 @@ namespace Ludu
     {
         m_Pipeline->Bind(m_CommandBuffers[m_ImageIndex]);
 
+        auto projectionView = camera.GetProjection() * camera.GetView();
+
         for (auto entity : m_RenderQueue)
         {
             SimplePushConstantData push{};
             push.color = entity->GetComponent<MeshComponent>().Color;
-            push.transform = camera.GetProjection() * entity->GetComponent<TransformComponent>().GetTransform();
+            push.transform = projectionView * entity->GetComponent<TransformComponent>().GetTransform();
 
             vkCmdPushConstants(m_CommandBuffers[m_ImageIndex], m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
 

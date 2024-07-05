@@ -3,6 +3,9 @@
 #include "Core/Layer.h"
 #include "Events/EventManager.h"
 
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
+
 namespace Ludu
 {
 

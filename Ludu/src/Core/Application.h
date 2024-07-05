@@ -7,6 +7,9 @@
 #include "Events/EventManager.h"
 #include "Renderer/Renderer.h"
 
+#include "Editor/ImGuiLayer.h"
+
+
 int main(int argc, char* argv[]);
 
 namespace Ludu {
@@ -34,6 +37,7 @@ namespace Ludu {
 		bool m_Running;
 
 		LayerStack m_LayerStack;
+		ImGuiLayer* m_ImGuiLayer;
 
 		Ref<Window> m_Window;
 		Ref<Renderer> m_Renderer;

@@ -1,7 +1,7 @@
 #include "ldpch.h"
 #include "VulkanWindow.h"
 
-#include "Core/Input.h"
+#include "Events/EventManager.h"
 
 namespace Ludu
 {
@@ -24,6 +24,12 @@ namespace Ludu
 
         glfwSetWindowUserPointer(m_Window, this);
         glfwSetFramebufferSizeCallback(m_Window, OnFrameBufferResize);
+
+        // Set GLFW callbacks
+        glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
+        {
+            EventManager::Publish<WindowResizeEvent>(WindowResizeEvent(width, height));
+        });
     }
 
     VulkanWindow::~VulkanWindow()

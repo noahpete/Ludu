@@ -20,6 +20,11 @@ namespace Ludu {
 
         virtual void Submit(Entity* entity) = 0;
 
+        virtual void Begin() = 0;
+        virtual void End() = 0;
+
+        virtual void InitImGui() = 0;
+
         virtual float GetAspectRatio() const = 0;
 
         static Scope<Renderer> Create(Ref<Window> window);

@@ -44,6 +44,8 @@ namespace Ludu
 
         VkCommandPool getCommandPool() { return commandPool; }
         VkDevice device() { return device_; }
+        VkInstance GetInstance() { return instance; }
+
         VkSurfaceKHR surface() { return surface_; }
         VkQueue graphicsQueue() { return graphicsQueue_; }
         VkQueue presentQueue() { return presentQueue_; }

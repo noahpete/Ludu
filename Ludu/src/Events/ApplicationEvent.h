@@ -16,7 +16,7 @@ namespace Ludu
         std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "WindowResizeEvent";
+            ss << "WindowResizeEvent (" << m_Width << ", " << m_Height << ")";
             return ss.str();
         }
 

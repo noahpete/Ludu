@@ -9,6 +9,12 @@
 #include "Platform/Vulkan/VulkanSwapChain.h"
 #include "Platform/Vulkan/VulkanModel.h"
 
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
+
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_vulkan.h>
+
 namespace Ludu
 {
 
@@ -23,10 +29,13 @@ namespace Ludu
 
         void Submit(Entity* entity) override;
 
-        void BeginFrame();
-        void EndFrame();
+        void Begin() override;
+        void End() override;
+
+        void InitImGui() override;
 
         float GetAspectRatio() const override { return m_SwapChain->extentAspectRatio(); }
+        VkCommandBuffer GetCurrentCommandBuffer() const { return m_CommandBuffers[m_ImageIndex]; }
 
         VulkanRenderer(const VulkanRenderer &) = delete;
         VulkanRenderer &operator=(const VulkanRenderer &) = delete;
