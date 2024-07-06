@@ -64,6 +64,11 @@ namespace Ludu
         {
             Model = CreateRef<VulkanModel>(vertices, indices);
         }
+
+        MeshComponent(const std::string& modelFilePath)
+        {
+            Model = VulkanModel::CreateModelFromFile(modelFilePath);
+        }
     };
 
     // struct CameraComponent

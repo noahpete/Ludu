@@ -12,12 +12,15 @@ namespace Ludu
 {
     struct Vertex
     {
-        glm::vec3 position;
-        glm::vec3 color;
+        glm::vec3 position{};
+        glm::vec3 color{};
+        glm::vec3 Normal{};
+        glm::vec2 UV{};
 
         static std::vector<VkVertexInputBindingDescription> GetBindingDescriptions();
         static std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions();
 
+        bool operator==(const Vertex& other) const { return position == other.position && color == other.color && Normal == other.Normal && UV == other.UV;  }
     };
 
     class VulkanModel
@@ -31,6 +34,8 @@ namespace Ludu
 
         void Bind(VkCommandBuffer commandBuffer);
         void Draw(VkCommandBuffer commandBuffer);
+
+        static Scope<VulkanModel> CreateModelFromFile(const std::string& filepath);
 
     private:
         VulkanDevice& m_Device;
