@@ -41,7 +41,7 @@ namespace Ludu
 			float curTime = Util::GetTime();
 			Timestep ts = curTime - m_LastFrameTime;
 			m_LastFrameTime = curTime;
-			LD_CORE_INFO("{0}", float(ts));
+
 			m_Window->OnUpdate();
 
 			if (m_Window->ShouldClose())
