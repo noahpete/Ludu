@@ -29,20 +29,20 @@ namespace Ludu {
 
         if (Input::IsKeyPressed(KeyCode::W))
         {
-            pos.z += 0.05f;
+            pos.z += 0.0005f;
         }
         else if (Input::IsKeyPressed(KeyCode::S))
         {
-            pos.z -= 0.05f;
+            pos.z -= 0.0005f;
         }
 
         if (Input::IsKeyPressed(KeyCode::A))
         {
-            pos.x -= 0.05f;
+            pos.x -= 0.0005f;
         }
         else if (Input::IsKeyPressed(KeyCode::D))
         {
-            pos.x += 0.05f;
+            pos.x += 0.0005f;
         }
 
         rot.x = glm::clamp(rot.x, -1.5f, 1.5f);
