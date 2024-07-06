@@ -60,9 +60,9 @@ namespace Ludu
         Ref<VulkanModel> Model;
         glm::vec3 Color = {1.0f, 1.0f, 1.0f};
 
-        MeshComponent(std::vector<Ludu::Vertex> &vertices)
+        MeshComponent(std::vector<Ludu::Vertex> &vertices, std::vector<uint32_t> &indices)
         {
-            Model = CreateRef<VulkanModel>(vertices);
+            Model = CreateRef<VulkanModel>(vertices, indices);
         }
     };
 

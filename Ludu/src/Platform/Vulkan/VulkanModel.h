@@ -10,7 +10,8 @@
 
 namespace Ludu
 {
-    struct Vertex {
+    struct Vertex
+    {
         glm::vec3 position;
         glm::vec3 color;
 
@@ -22,7 +23,7 @@ namespace Ludu
     class VulkanModel
     {
     public:
-        VulkanModel(const std::vector<Vertex> &vertices);
+        VulkanModel(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices);
         ~VulkanModel();
 
         VulkanModel(const VulkanModel &) = delete;
@@ -33,10 +34,17 @@ namespace Ludu
 
     private:
         VulkanDevice& m_Device;
+
         VkBuffer m_VertexBuffer;
         VkDeviceMemory m_VertexBufferMemory;
         uint32_t m_VertexCount;
 
-        void CreateVertexBuffers(const std::vector<Vertex> &vertices);
+        bool m_HasIndexBuffer = false;
+        VkBuffer m_IndexBuffer;
+        VkDeviceMemory m_IndexBufferMemory;
+        uint32_t m_IndexCount;
+
+        void CreateVertexBuffers(const std::vector<Vertex>& vertices);
+        void CreateIndexBuffers(const std::vector<uint32_t> &indices);
     };
 }
