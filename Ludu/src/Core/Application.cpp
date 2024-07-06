@@ -4,8 +4,7 @@
 #include "Renderer/Camera.h"
 
 #include "Core/Input.h"
-
-#include <GLFW/glfw3.h>
+#include "Core/Util.h"
 
 namespace Ludu
 {
@@ -42,7 +41,7 @@ namespace Ludu
 			float curTime = Util::GetTime();
 			Timestep ts = curTime - m_LastFrameTime;
 			m_LastFrameTime = curTime;
-
+			LD_CORE_INFO("{0}", float(ts));
 			m_Window->OnUpdate();
 
 			if (m_Window->ShouldClose())
@@ -86,6 +85,7 @@ namespace Ludu
 
     Ref<Camera> Application::GetPrimaryCamera()
     {
+		// For now always returns editor camera
         return m_EditorLayer->GetEditorCamera();
     }
 }
