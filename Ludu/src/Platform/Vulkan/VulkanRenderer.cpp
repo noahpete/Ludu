@@ -13,8 +13,9 @@ namespace Ludu
 
     struct SimplePushConstantData
     {
-        glm::mat4 transform{1.0f};
-        alignas(16) glm::vec3 color;
+        glm::mat4 transform{ 1.0f };
+        glm::mat4 normalMatrix{1.0f};
+       
     };
 
     VulkanRenderer::VulkanRenderer(Ref<VulkanWindow> window)
@@ -268,8 +269,9 @@ namespace Ludu
         for (auto entity : m_RenderQueue)
         {
             SimplePushConstantData push{};
-            push.color = entity->GetComponent<MeshComponent>().Color;
-            push.transform = projectionView * entity->GetComponent<TransformComponent>().GetTransform();
+            auto modelMatrix = entity->GetComponent<TransformComponent>().GetTransform();
+            push.transform = projectionView * modelMatrix;
+            push.normalMatrix = entity->GetComponent<TransformComponent>().GetNormalMatrix();
 
             vkCmdPushConstants(m_CommandBuffers[m_ImageIndex], m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
 
