@@ -15,6 +15,7 @@ namespace Ludu
         void OnAttach() override;
         void OnDetach() override;
         void OnUpdate(Timestep ts) override;
+        void OnImGuiRender() override;
 
         Ref<Camera> GetEditorCamera() const { return m_Camera; }
 

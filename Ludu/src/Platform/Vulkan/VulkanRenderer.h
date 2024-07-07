@@ -8,6 +8,7 @@
 #include "Platform/Vulkan/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanSwapChain.h"
 #include "Platform/Vulkan/VulkanModel.h"
+#include "Platform/Vulkan/VulkanBuffer.h"
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>

@@ -40,12 +40,13 @@ namespace Ludu {
 		bool m_Running;
 		float m_LastFrameTime;
 
+		Ref<Window> m_Window;
+		Ref<Renderer> m_Renderer;
+
 		LayerStack m_LayerStack;
 		ImGuiLayer* m_ImGuiLayer;
 		EditorLayer* m_EditorLayer;
 
-		Ref<Window> m_Window;
-		Ref<Renderer> m_Renderer;
 
 	};
 

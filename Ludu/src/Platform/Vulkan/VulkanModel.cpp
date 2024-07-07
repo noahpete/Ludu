@@ -34,7 +34,6 @@ namespace Ludu
 
     VulkanModel::~VulkanModel()
     {
-        
     }
 
     void VulkanModel::Bind(VkCommandBuffer commandBuffer)
