@@ -29,18 +29,12 @@ namespace Ludu
     {
         CreateVertexBuffers(vertices);
         CreateIndexBuffers(indices);
+        m_Device.addModel(this);
     }
 
     VulkanModel::~VulkanModel()
     {
-        vkDestroyBuffer(m_Device.device(), m_VertexBuffer, nullptr);
-        vkFreeMemory(m_Device.device(), m_VertexBufferMemory, nullptr);
-
-        if (m_HasIndexBuffer)
-        {
-            vkDestroyBuffer(m_Device.device(), m_IndexBuffer, nullptr);
-            vkFreeMemory(m_Device.device(), m_IndexBufferMemory, nullptr);
-        }
+        
     }
 
     void VulkanModel::Bind(VkCommandBuffer commandBuffer)

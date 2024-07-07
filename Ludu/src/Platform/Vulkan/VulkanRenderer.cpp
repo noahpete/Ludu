@@ -1,9 +1,13 @@
 #include "VulkanRenderer.h"
+#include "VulkanRenderer.h"
+#include "VulkanRenderer.h"
 #include "ldpch.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
+
+#include <vulkan/vulkan.h>
 
 #include "Scene/Components.h"
 
@@ -41,6 +45,11 @@ namespace Ludu
     void VulkanRenderer::Shutdown()
     {
         vkDeviceWaitIdle(m_Device.device());
+
+        // ImGui shutdown
+        ImGui_ImplVulkan_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        vkDestroyDescriptorPool(m_Device.device(), m_ImGuiPool, nullptr);
     }
 
     void VulkanRenderer::Submit(Entity* entity)
@@ -145,8 +154,7 @@ namespace Ludu
         pool_info.poolSizeCount = std::size(pool_sizes);
         pool_info.pPoolSizes = pool_sizes;
 
-        VkDescriptorPool imguiPool;
-        vkCreateDescriptorPool(m_Device.device(), &pool_info, nullptr, &imguiPool);
+        vkCreateDescriptorPool(m_Device.device(), &pool_info, nullptr, &m_ImGuiPool);
 
 
         // 2: initialize imgui library
@@ -163,7 +171,7 @@ namespace Ludu
         init_info.PhysicalDevice = m_Device.getPhysicalDevice();
         init_info.Device = m_Device.device();
         init_info.Queue = m_Device.graphicsQueue();
-        init_info.DescriptorPool = imguiPool;
+        init_info.DescriptorPool = m_ImGuiPool;
         init_info.MinImageCount = 3;
         init_info.ImageCount = 3;
         init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
@@ -178,13 +186,6 @@ namespace Ludu
 
         //clear font textures from cpu data
         //ImGui_ImplVulkan_DestroyFontUploadObjects();
-
-        //add the destroy the imgui created structures
-        /*_mainDeletionQueue.push_function([=]() {
-
-            vkDestroyDescriptorPool(_device, imguiPool, nullptr);
-            ImGui_ImplVulkan_Shutdown();
-            });*/
     }
 
     void VulkanRenderer::CreatePipelineLayout()
@@ -259,6 +260,7 @@ namespace Ludu
 
         CreatePipeline();
     }
+
 
     void VulkanRenderer::RenderScene(const Camera& camera)
     {

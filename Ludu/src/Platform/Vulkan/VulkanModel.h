@@ -35,6 +35,18 @@ namespace Ludu
         void Bind(VkCommandBuffer commandBuffer);
         void Draw(VkCommandBuffer commandBuffer);
 
+        void Destroy()
+        {
+            vkDestroyBuffer(m_Device.device(), m_VertexBuffer, nullptr);
+            vkFreeMemory(m_Device.device(), m_VertexBufferMemory, nullptr);
+
+            if (m_HasIndexBuffer)
+            {
+                vkDestroyBuffer(m_Device.device(), m_IndexBuffer, nullptr);
+                vkFreeMemory(m_Device.device(), m_IndexBufferMemory, nullptr);
+            }
+        }
+
         static Scope<VulkanModel> CreateModelFromFile(const std::string& filepath);
 
     private:

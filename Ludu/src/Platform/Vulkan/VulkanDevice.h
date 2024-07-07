@@ -7,6 +7,7 @@
 
 namespace Ludu
 {
+    class VulkanModel;
 
     struct SwapChainSupportDetails
     {
@@ -79,6 +80,15 @@ namespace Ludu
 
         VkPhysicalDevice getPhysicalDevice() { return physicalDevice; }
 
+        void addModel(VulkanModel* model) { models_.push_back(model); }
+
+        void removeModel(VulkanModel* model) {
+            auto it = std::find(models_.begin(), models_.end(), model);
+            if (it != models_.end()) {
+                models_.erase(it);
+            }
+        }
+
         static VulkanDevice& Get() { return *s_Instance; }
 
     private:
@@ -111,6 +121,8 @@ namespace Ludu
         VkSurfaceKHR surface_;
         VkQueue graphicsQueue_;
         VkQueue presentQueue_;
+
+        std::vector<VulkanModel*> models_;
 
         const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
         const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};

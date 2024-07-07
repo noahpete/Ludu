@@ -24,9 +24,6 @@ namespace Ludu
 
     void ImGuiLayer::OnDetach()
     {
-        ImGui_ImplGlfw_Shutdown();
-        ImGui_ImplVulkan_Shutdown();
-        ImGui::DestroyContext();
     }
 
     void ImGuiLayer::Begin()

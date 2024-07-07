@@ -7,6 +7,8 @@
 #include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_beta.h>
 
+#include "Platform/Vulkan/VulkanModel.h"
+
 namespace Ludu
 {
     VulkanDevice* VulkanDevice::s_Instance;
@@ -75,6 +77,11 @@ namespace Ludu
 
     VulkanDevice::~VulkanDevice()
     {
+        for (auto* model : models_) {
+            model->Destroy();
+        }
+        models_.clear();
+
         vkDestroyCommandPool(device_, commandPool, nullptr);
         vkDestroyDevice(device_, nullptr);
 

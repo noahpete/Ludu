@@ -47,6 +47,7 @@ namespace Ludu
         Scope<VulkanPipeline> m_Pipeline;
         VkPipelineLayout m_PipelineLayout;
         std::vector<VkCommandBuffer> m_CommandBuffers;
+        VkDescriptorPool m_ImGuiPool;
 
         std::vector<Entity*> m_RenderQueue;
         uint32_t m_ImageIndex;
