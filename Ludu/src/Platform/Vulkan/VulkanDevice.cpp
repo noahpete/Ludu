@@ -78,7 +78,7 @@ namespace Ludu
     VulkanDevice::~VulkanDevice()
     {
         for (auto* model : models_) {
-            model->Destroy();
+            model->~VulkanModel();
         }
         models_.clear();
 

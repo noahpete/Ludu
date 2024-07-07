@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Platform/Vulkan/VulkanDevice.h"
+#include "Platform/Vulkan/VulkanBuffer.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -35,30 +36,16 @@ namespace Ludu
         void Bind(VkCommandBuffer commandBuffer);
         void Draw(VkCommandBuffer commandBuffer);
 
-        void Destroy()
-        {
-            vkDestroyBuffer(m_Device.device(), m_VertexBuffer, nullptr);
-            vkFreeMemory(m_Device.device(), m_VertexBufferMemory, nullptr);
-
-            if (m_HasIndexBuffer)
-            {
-                vkDestroyBuffer(m_Device.device(), m_IndexBuffer, nullptr);
-                vkFreeMemory(m_Device.device(), m_IndexBufferMemory, nullptr);
-            }
-        }
-
         static Scope<VulkanModel> CreateModelFromFile(const std::string& filepath);
 
     private:
         VulkanDevice& m_Device;
 
-        VkBuffer m_VertexBuffer;
-        VkDeviceMemory m_VertexBufferMemory;
+        Scope<VulkanBuffer> m_VertexBuffer;
         uint32_t m_VertexCount;
 
         bool m_HasIndexBuffer = false;
-        VkBuffer m_IndexBuffer;
-        VkDeviceMemory m_IndexBufferMemory;
+        Scope<VulkanBuffer> m_IndexBuffer;
         uint32_t m_IndexCount;
 
         void CreateVertexBuffers(const std::vector<Vertex>& vertices);
