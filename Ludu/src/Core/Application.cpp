@@ -52,10 +52,10 @@ namespace Ludu
 
 			// Render
 
-			m_Renderer->Begin();
-
 			auto camera = GetPrimaryCamera();
 			camera->SetPerspectiveProjection(glm::radians(50.0f), m_Renderer->GetAspectRatio(), 0.1f, 10.0f);
+
+			m_Renderer->Begin(*camera);
 			 
 			m_Renderer->OnUpdate(*camera);
 

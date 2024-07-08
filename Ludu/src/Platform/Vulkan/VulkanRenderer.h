@@ -9,6 +9,7 @@
 #include "Platform/Vulkan/VulkanSwapChain.h"
 #include "Platform/Vulkan/VulkanModel.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
+#include "Platform/Vulkan/VulkanDescriptors.h"
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
@@ -30,7 +31,7 @@ namespace Ludu
 
         void Submit(Entity* entity) override;
 
-        void Begin() override;
+        void Begin(const Camera& camera) override;
         void End() override;
 
         void InitImGui() override;
@@ -52,7 +53,13 @@ namespace Ludu
 
         std::vector<Entity*> m_RenderQueue;
         uint32_t m_ImageIndex;
+        uint32_t m_FrameIndex = 0;
         bool m_FrameStarted;
+
+        std::vector<Scope<VulkanBuffer>> m_UboBuffers{};
+        std::vector<VkDescriptorSet> m_GlobalDescriptorSets{};
+
+        Scope<VulkanDescriptorPool> m_GlobalPool{};
 
         void CreatePipelineLayout();
         void CreatePipeline();

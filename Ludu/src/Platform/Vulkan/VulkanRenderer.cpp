@@ -1,6 +1,4 @@
 #include "VulkanRenderer.h"
-#include "VulkanRenderer.h"
-#include "VulkanRenderer.h"
 #include "ldpch.h"
 
 #define GLM_FORCE_RADIANS
@@ -22,15 +20,44 @@ namespace Ludu
        
     };
 
+    struct GlobalUbo
+    {
+        glm::mat4 ProjectionView{ 1.0f };
+        glm::vec3 LightDirection = glm::normalize(glm::vec3{ 1.0f, -3.0f, -1.0f });
+    };
 
     VulkanRenderer::VulkanRenderer(Ref<VulkanWindow> window)
         : m_Window(window), m_Device{ *window }, m_Pipeline{}
     {
         s_Instance = this;
 
+        for (int i = 0; i < VulkanSwapChain::MAX_FRAMES_IN_FLIGHT; i++)
+        {
+            m_UboBuffers.emplace_back(CreateScope<VulkanBuffer>(m_Device, sizeof(GlobalUbo), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+            m_UboBuffers.back()->map();
+        }
+
         CreatePipelineLayout();
         RecreateSwapChain();
         CreateCommandBuffers();
+
+        m_GlobalPool = VulkanDescriptorPool::Builder(m_Device)
+            .setMaxSets(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT)
+            .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VulkanSwapChain::MAX_FRAMES_IN_FLIGHT)
+            .build();
+
+        auto globalSetLayout = VulkanDescriptorLayout::Builder(m_Device)
+            .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+            .build();
+
+        m_GlobalDescriptorSets.resize(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
+        for (int i = 0; i < VulkanSwapChain::MAX_FRAMES_IN_FLIGHT; i++)
+        {
+            auto bufferInfo = m_UboBuffers[i]->descriptorInfo();
+            VulkanDescriptorWriter(*globalSetLayout, *m_GlobalPool)
+                .writeBuffer(0, &bufferInfo)
+                .build(m_GlobalDescriptorSets[i]);
+        }
     }
 
     VulkanRenderer::~VulkanRenderer()
@@ -58,7 +85,7 @@ namespace Ludu
         m_RenderQueue.push_back(entity);
     }
 
-    void VulkanRenderer::Begin()
+    void VulkanRenderer::Begin(const Camera& camera)
     {
         LD_CORE_ASSERT(!m_FrameStarted);
 
@@ -75,6 +102,12 @@ namespace Ludu
             LD_CORE_ERROR("Failed to acquire swap chain image!");
 
         m_FrameStarted = true;
+
+        // Update
+        GlobalUbo ubo{};
+        ubo.ProjectionView = camera.GetProjection() * camera.GetView();
+        m_UboBuffers[m_FrameIndex]->writeToBuffer(&ubo);
+        m_UboBuffers[m_FrameIndex]->flush();
 
         // Begin swap chain render pass
         VkCommandBufferBeginInfo beginInfo{};
@@ -129,6 +162,7 @@ namespace Ludu
         //    LD_CORE_ERROR("Failed to present swap chain image!");
 
         m_FrameStarted = false;
+        m_FrameIndex = (m_FrameIndex + 1) % VulkanSwapChain::MAX_FRAMES_IN_FLIGHT;
     }
 
     void VulkanRenderer::InitImGui()
@@ -179,14 +213,6 @@ namespace Ludu
         init_info.RenderPass = m_SwapChain->getRenderPass();
 
         ImGui_ImplVulkan_Init(&init_info);
-
-        //execute a gpu command to upload imgui font textures
-        /*immediate_submit([&](VkCommandBuffer cmd) {
-            ImGui_ImplVulkan_CreateFontsTexture(cmd);
-            });*/
-
-        //clear font textures from cpu data
-        //ImGui_ImplVulkan_DestroyFontUploadObjects();
     }
 
     void VulkanRenderer::CreatePipelineLayout()

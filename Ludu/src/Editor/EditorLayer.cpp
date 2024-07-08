@@ -1,6 +1,5 @@
 #include "EditorLayer.h"
 #include "ldpch.h"
-#include "EditorLayer.h"
 
 #include "Core/Input.h"
 
@@ -56,7 +55,7 @@ namespace Ludu {
 
     void Ludu::EditorLayer::OnImGuiRender()
     {
-        static bool dockspace_open = true;
+        /*static bool dockspace_open = true;
         static bool opt_fullscreen = true;
         static bool opt_padding = false;
         static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
@@ -97,7 +96,7 @@ namespace Ludu {
             ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
         }
 
-        ImGui::End();
+        ImGui::End();*/
 
         // Settings
         ImGui::Begin("Settings");

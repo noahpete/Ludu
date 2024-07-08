@@ -7,6 +7,8 @@
 
 #include "Scene/Entity.h"
 
+#include <imgui/imgui.h>
+
 namespace Ludu {
 
     class Renderer
@@ -20,7 +22,7 @@ namespace Ludu {
 
         virtual void Submit(Entity* entity) = 0;
 
-        virtual void Begin() = 0;
+        virtual void Begin(const Camera& camera) = 0;
         virtual void End() = 0;
 
         virtual void InitImGui() = 0;
