@@ -47,6 +47,15 @@ namespace Ludu {
             pos.x += 0.0005f;
         }
 
+        if (Input::IsKeyPressed(KeyCode::Space))
+        {
+            pos.y -= 0.0005f;
+        }
+        else if (Input::IsKeyPressed(KeyCode::LeftControl))
+        {
+            pos.y += 0.0005f;
+        }
+
         rot.x = glm::clamp(rot.x, -1.5f, 1.5f);
         rot.y = glm::mod(rot.y, 6.28f);
 
