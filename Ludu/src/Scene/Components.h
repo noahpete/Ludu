@@ -86,7 +86,7 @@ namespace Ludu
 
     struct MeshComponent
     {
-        Ref<VulkanModel> Model;
+        Ref<VulkanModel> Model; // TODO: abstract into Model class
         glm::vec3 Color = {1.0f, 1.0f, 1.0f};
 
         MeshComponent(std::vector<Ludu::Vertex> &vertices, std::vector<uint32_t> &indices)
@@ -99,6 +99,15 @@ namespace Ludu
             Model = VulkanModel::CreateModelFromFile(modelFilePath);
         }
     };
+
+    struct Texture2DComponent
+    {
+
+        Texture2DComponent(const std::string& texFilepath)
+        {
+            
+        }
+    }
 
     // struct CameraComponent
     //{
