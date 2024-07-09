@@ -45,7 +45,7 @@ namespace Ludu
             .build();
 
         auto globalSetLayout = VulkanDescriptorLayout::Builder(m_Device)
-            .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+            .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
             .build();
 
         m_GlobalDescriptorSets.resize(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -299,6 +299,7 @@ namespace Ludu
 
         vkCmdBindDescriptorSets(m_CommandBuffers[m_ImageIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, m_PipelineLayout, 0, 1, &m_GlobalDescriptorSets[m_FrameIndex], 0, nullptr);
 
+        // TODO: remove Submit and just automatically render all entities with a ModelComponent
         for (auto entity : m_RenderQueue)
         {
             SimplePushConstantData push{};
