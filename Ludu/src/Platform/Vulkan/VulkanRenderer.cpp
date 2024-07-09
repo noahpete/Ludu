@@ -15,7 +15,7 @@ namespace Ludu
 
     struct SimplePushConstantData
     {
-        glm::mat4 transform{ 1.0f };
+        glm::mat4 modelMatrix{ 1.0f };
         glm::mat4 normalMatrix{1.0f};
        
     };
@@ -23,7 +23,9 @@ namespace Ludu
     struct GlobalUbo
     {
         glm::mat4 ProjectionView{ 1.0f };
-        glm::vec3 LightDirection = glm::normalize(glm::vec3{ 1.0f, -3.0f, -1.0f });
+        glm::vec4 AmbientLightColor{ 1.0f, 1.0f, 1.0f, 0.02f };
+        glm::vec3 LightPosition{ -1.0f };
+        alignas(16) glm::vec4 LightColor{ 1.0f };
     };
 
     VulkanRenderer::VulkanRenderer(Ref<VulkanWindow> window)
@@ -36,10 +38,6 @@ namespace Ludu
             m_UboBuffers.emplace_back(CreateScope<VulkanBuffer>(m_Device, sizeof(GlobalUbo), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
             m_UboBuffers.back()->map();
         }
-
-        CreatePipelineLayout();
-        RecreateSwapChain();
-        CreateCommandBuffers();
 
         m_GlobalPool = VulkanDescriptorPool::Builder(m_Device)
             .setMaxSets(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT)
@@ -58,6 +56,10 @@ namespace Ludu
                 .writeBuffer(0, &bufferInfo)
                 .build(m_GlobalDescriptorSets[i]);
         }
+
+        CreatePipelineLayout(globalSetLayout->getDescriptorSetLayout());
+        RecreateSwapChain();
+        CreateCommandBuffers();
     }
 
     VulkanRenderer::~VulkanRenderer()
@@ -215,17 +217,19 @@ namespace Ludu
         ImGui_ImplVulkan_Init(&init_info);
     }
 
-    void VulkanRenderer::CreatePipelineLayout()
+    void VulkanRenderer::CreatePipelineLayout(VkDescriptorSetLayout globalSetLayout)
     {
         VkPushConstantRange pushConstantRange{};
         pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
         pushConstantRange.offset = 0;
         pushConstantRange.size = sizeof(SimplePushConstantData);
 
+        std::vector<VkDescriptorSetLayout> dsetLayouts{ globalSetLayout };
+
         VkPipelineLayoutCreateInfo info{};
         info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        info.setLayoutCount = 0;
-        info.pSetLayouts = nullptr;
+        info.setLayoutCount = dsetLayouts.size();
+        info.pSetLayouts = dsetLayouts.data();
         info.pushConstantRangeCount = 1;
         info.pPushConstantRanges = &pushConstantRange;
 
@@ -293,13 +297,12 @@ namespace Ludu
     {
         m_Pipeline->Bind(m_CommandBuffers[m_ImageIndex]);
 
-        auto projectionView = camera.GetProjection() * camera.GetView();
+        vkCmdBindDescriptorSets(m_CommandBuffers[m_ImageIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, m_PipelineLayout, 0, 1, &m_GlobalDescriptorSets[m_FrameIndex], 0, nullptr);
 
         for (auto entity : m_RenderQueue)
         {
             SimplePushConstantData push{};
-            auto modelMatrix = entity->GetComponent<TransformComponent>().GetTransform();
-            push.transform = projectionView * modelMatrix;
+            push.modelMatrix = entity->GetComponent<TransformComponent>().GetTransform();
             push.normalMatrix = entity->GetComponent<TransformComponent>().GetNormalMatrix();
 
             vkCmdPushConstants(m_CommandBuffers[m_ImageIndex], m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);

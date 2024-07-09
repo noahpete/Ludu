@@ -61,7 +61,7 @@ namespace Ludu
 
         Scope<VulkanDescriptorPool> m_GlobalPool{};
 
-        void CreatePipelineLayout();
+        void CreatePipelineLayout(VkDescriptorSetLayout globalSetLayout);
         void CreatePipeline();
         void CreateCommandBuffers();
         void FreeCommandBuffers();
