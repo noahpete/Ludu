@@ -29,31 +29,33 @@ namespace Ludu {
         auto& pos = m_Camera->GetPosition();
         auto& rot = m_Camera->GetRotation();
 
+        float speed = 0.5f * ts;
+
         if (Input::IsKeyPressed(KeyCode::W))
         {
-            pos.z += 0.0005f;
+            pos.z += speed;
         }
         else if (Input::IsKeyPressed(KeyCode::S))
         {
-            pos.z -= 0.0005f;
+            pos.z -= speed;
         }
 
         if (Input::IsKeyPressed(KeyCode::A))
         {
-            pos.x -= 0.0005f;
+            pos.x -= speed;
         }
         else if (Input::IsKeyPressed(KeyCode::D))
         {
-            pos.x += 0.0005f;
+            pos.x += speed;
         }
 
         if (Input::IsKeyPressed(KeyCode::Space))
         {
-            pos.y -= 0.0005f;
+            pos.y -= speed;
         }
         else if (Input::IsKeyPressed(KeyCode::LeftControl))
         {
-            pos.y += 0.0005f;
+            pos.y += speed;
         }
 
         rot.x = glm::clamp(rot.x, -1.5f, 1.5f);
