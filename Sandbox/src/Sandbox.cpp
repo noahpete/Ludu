@@ -11,15 +11,15 @@ public:
 		m_SecondEntity = m_Scene.CreateEntity("Example2");
 		m_FloorEntity = m_Scene.CreateEntity("Floor");
 
-        m_Entity.AddComponent<Ludu::MeshComponent>("../flat_vase.obj");
+        m_Entity.AddComponent<Ludu::MeshComponent>("flat_vase.obj");
         m_Entity.GetComponent<Ludu::TransformComponent>().Translation = { -0.3f, 0.2f, 0.5f };
         m_Entity.GetComponent<Ludu::TransformComponent>().Scale = { 1.0f, 1.0f, 1.0f };
 
-        m_SecondEntity.AddComponent<Ludu::MeshComponent>("../flat_vase.obj");
+        m_SecondEntity.AddComponent<Ludu::MeshComponent>("flat_vase.obj");
         m_SecondEntity.GetComponent<Ludu::TransformComponent>().Translation = { 0.3f, 0.2f, 0.5f };
         m_SecondEntity.GetComponent<Ludu::TransformComponent>().Scale = { 2.0f, 0.7f, 1.0f };
 
-		m_FloorEntity.AddComponent<Ludu::MeshComponent>("../quad.obj");
+		m_FloorEntity.AddComponent<Ludu::MeshComponent>("quad.obj");
 		m_FloorEntity.GetComponent<Ludu::TransformComponent>().Translation = { 0.0f, 0.2f, 0.0f };
 		m_FloorEntity.GetComponent<Ludu::TransformComponent>().Scale = { 3.0f, 1.0f, 3.0f };
 	}

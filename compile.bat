@@ -1,3 +1,3 @@
-C:\VulkanSDK\Bin\glslc.exe simple_shader.vert -o simple_shader.vert.spv
-C:\VulkanSDK\Bin\glslc.exe simple_shader.frag -o simple_shader.frag.spv
+C:\VulkanSDK\Bin\glslc.exe FlatColor.vert -o FlatColor.vert.spv
+C:\VulkanSDK\Bin\glslc.exe FlatColor.frag -o FlatColor.frag.spv
 pause
