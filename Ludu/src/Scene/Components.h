@@ -105,9 +105,9 @@ namespace Ludu
 
         Texture2DComponent(const std::string& texFilepath)
         {
-            
+
         }
-    }
+    };
 
     // struct CameraComponent
     //{
