@@ -29,7 +29,7 @@ namespace Ludu
             LD_CORE_ERROR("Failed to load texture image {0}", filepath);
         }
 
-        VulkanBuffer stagingBuffer{VulkanDevice::Get(), 4, width * height, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
+        VulkanBuffer stagingBuffer{ VulkanDevice::Get(), 4, static_cast<uint32_t>(width * height), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT };
         stagingBuffer.map();
         stagingBuffer.writeToBuffer(pixels);
 
